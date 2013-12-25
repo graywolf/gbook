@@ -5,7 +5,7 @@
 
 using namespace std;
 
-gbook::event_loop::event_loop(gbook::screen * screen) : m_screen({screen})
+gbook::event_loop::event_loop(gbook::screen * screen) : m_screen(screen)
 {
     //should be more than enough
     m_pollfds.reserve(8);
@@ -31,10 +31,19 @@ void gbook::event_loop::start()
 {
     while (!m_stop) {
         //poll for changes, timeout is set to 1s to be able to exit event_loop
-        //if m_stop is set by some thread of something in resonable time (+- 1s)
+        //if m_stop is set by some thread or something in resonable time (+- 1s)
         int poll_count = poll(m_pollfds.data(), m_pollfds.size(), 1000);
         if (poll_count < 0) {
             //TODO: somehow handle error here
+        } else if (poll_count > 1) {
+            for (auto f : m_pollfds) {
+                cout << f.fd << endl;
+                stop();
+                if ((f.revents & POLLIN) == 1) {
+                    cout << wgetch() << endl;
+                    stop();
+                }
+            }
         }
     }
 }
