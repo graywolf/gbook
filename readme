@@ -1,0 +1,9 @@
+Content
+    1. Requirements
+
+1. Requirements
+
+ncurses
+boost
+cmake
+gcc 4.8+ (c++11 support)
