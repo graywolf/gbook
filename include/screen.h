@@ -20,7 +20,7 @@ namespace gbook {
         void focus_window(int win_id);
         window * get_active_window();
     private:
-        std::map<int, std::unique_ptr<window *>> m_windows;
+        std::map<int, std::unique_ptr<window>> m_windows;
         int m_active_window;
         int m_last_window_id = -1;
         int add_window_to_map(window * win);

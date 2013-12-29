@@ -28,3 +28,8 @@ gbook::window::~window()
     wrefresh(m_window);
     delwin(m_window);
 }
+
+WINDOW* gbook::window::get_window_ptr()
+{
+    return m_window;
+}

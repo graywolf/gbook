@@ -35,12 +35,9 @@ void gbook::event_loop::start()
         int poll_count = poll(m_pollfds.data(), m_pollfds.size(), 1000);
         if (poll_count < 0) {
             //TODO: somehow handle error here
-        } else if (poll_count > 1) {
+        } else if (poll_count >= 1) {
             for (auto f : m_pollfds) {
-                cout << f.fd << endl;
-                stop();
                 if ((f.revents & POLLIN) == 1) {
-                    cout << wgetch() << endl;
                     stop();
                 }
             }

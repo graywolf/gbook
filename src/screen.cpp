@@ -63,12 +63,13 @@ void gbook::screen::focus_window(int win_id)
 
 gbook::window * gbook::screen::get_active_window()
 {
-    return *(m_windows[m_active_window]);
+    return m_windows[m_active_window].get();
 }
 
 int gbook::screen::add_window_to_map(gbook::window * win)
 {
-    m_windows[++m_last_window_id] = unique_ptr<window *>(win);
+    m_windows[++m_last_window_id] = unique_ptr<gbook::window>(win);
+    return m_last_window_id;
 }
 
 gbook::screen::~screen()
