@@ -1,9 +1,6 @@
 #ifndef CONFIG_H
 #define CONFIG_H
 
-#define MAJOR_VERSION "0"
-#define MINOR_VERSION "1"
-
-#define VERSION MAJOR_VERSION "." MINOR_VERSION
+#include "version.h"
 
 #endif //CONFIG_H
