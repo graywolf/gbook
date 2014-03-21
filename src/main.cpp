@@ -96,6 +96,10 @@ void print_version() {
 }
 
 int main(int argc, char **argv) {
+    ios_base::sync_with_stdio(false);
+    locale loc ("");
+    locale::global (loc);
+
     declare_program_options();
     parse(argc, argv);
 

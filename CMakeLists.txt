@@ -22,6 +22,12 @@ ADD_EXECUTABLE(
         src/main.cpp
 )
 
+ADD_EXECUTABLE(
+    test_it
+        test/gtest.cpp
+        lib/abook/user_reader.cpp
+)
+
 FIND_PACKAGE(
     Boost 1.55
     COMPONENTS
@@ -33,10 +39,20 @@ INCLUDE_DIRECTORIES(
     ${Boost_INCLUDE_DIR}
 )
 
+INCLUDE_DIRECTORIES(
+    lib/abook
+)
+
 TARGET_LINK_LIBRARIES(
     ${PROJECT_NAME}
 
     ${Boost_LIBRARIES}
+)
+
+TARGET_LINK_LIBRARIES(
+    test_it
+
+    gtest
 )
 
 # include the output directory, where the version.h file is generated
