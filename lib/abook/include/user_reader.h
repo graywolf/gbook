@@ -1,3 +1,6 @@
+#ifndef GBOOK_ABOOK_USER_READER_H
+#define GBOOK_ABOOK_USER_READER_H
+
 #include <string>
 #include <vector>
 #include <istream>
@@ -23,3 +26,5 @@ namespace gbook {
         std::vector<user> parse_string(std::string input);
     }
 }
+
+#endif // GBOOK_ABOOK_USER_READER_H

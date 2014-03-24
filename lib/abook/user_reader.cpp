@@ -29,11 +29,15 @@ vector<user> gbook::abook::parse_string(string input) {
         if (!line.empty()) {
             if (line == "[format]") {
                 in_user = false;
-            } else if (line.at(0) == '[' && !current_user.empty()) {
+            } else if (line.at(0) == '[') {
                 //I don't care about user number, is irrelevant
                 in_user = true;
-                users.push_back(move(current_user));
-                current_user = user();
+                //if current user is not empty, append it and prepare
+                //variable for the new one
+                if (!current_user.empty()) {
+                    users.push_back(move(current_user));
+                    current_user = user();
+                }
             } else if (in_user) {
                 string key, value;
                 //if does not contain =, is not valid so ignore this line
@@ -43,12 +47,13 @@ vector<user> gbook::abook::parse_string(string input) {
 
                     if (key == "name") {
                         current_user.name = value;
-                    } else if (key == "emails") {
+                    } else if (key == "email") {
                         current_user.emails.clear();
                         while (value.find(",") != string::npos) {
                             current_user.emails.push_back(value.substr(0, value.find(",")));
                             value = value.substr(value.find(",")+1);
                         }
+                        current_user.emails.push_back(value);
                     } else if (key == "address") {
                         current_user.address = value;
                     } else if (key == "address2") {
@@ -83,6 +88,7 @@ vector<user> gbook::abook::parse_string(string input) {
                             current_user.groups.push_back(value.substr(0, value.find(",")));
                             value = value.substr(value.find(",")+1);
                         }
+                        current_user.groups.push_back(value);
                     } else if (key == "custom1") {
                         current_user.custom1 = value;
                     } else if (key == "custom2") {
@@ -99,6 +105,9 @@ vector<user> gbook::abook::parse_string(string input) {
                 }
             }
         }
+    }
+    if (!current_user.empty()) {
+        users.push_back(move(current_user));
     }
     return users;
 }

@@ -1,3 +1,6 @@
+#ifndef GBOOK_ABOOK_USER_H
+#define GBOOK_ABOOK_USER_H
+
 #include <string>
 #include <vector>
 
@@ -128,3 +131,5 @@ namespace gbook {
         };
     }
 }
+
+#endif // GBOOK_ABOOK_USER_H
