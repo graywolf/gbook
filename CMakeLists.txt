@@ -14,6 +14,8 @@ SET(
     PROJECT_FILES
         lib/tinyxml2/tinyxml2.cpp
         src/user_reader.cpp
+        src/contacts.cpp
+        src/curl.cpp
 )
 SET(
     CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake
@@ -39,7 +41,7 @@ CMAKE_MINIMUM_REQUIRED(
 
 INCLUDE_DIRECTORIES(
     ${CMAKE_CURRENT_BINARY_DIR}
-    lib/tinyxml2
+    lib
     include
 )
 

@@ -1,5 +1,5 @@
-#ifndef libgcon_CURL_H
-#define libgcon_CURL_H
+#ifndef gbook_CURL_H
+#define gbook_CURL_H
 
 #include <stdexcept>
 #include <map>
@@ -12,10 +12,7 @@ namespace gbook {
     enum class method {
         GET, POST
     };
-    size_t received_body_writer(char * ptr, size_t size, size_t nmemb, std::string received_body) {
-        received_body.append(std::string(ptr, ptr + size * nmemb));
-        return size * nmemb;
-    }
+    size_t received_body_writer(char * ptr, size_t size, size_t nmemb, std::string received_body);
     /**
      * Overlay class for CURL.
      **/
@@ -168,4 +165,4 @@ namespace gbook {
     };
 }
 
-#endif // libgcon_CURL_H
+#endif // gbook_CURL_H

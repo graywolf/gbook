@@ -12,6 +12,10 @@
 
 namespace gbook {
 
+    const std::string client_id { "YOUR-CLIENT-ID" };
+    const std::string client_secret { "YOUR-CLIENT-SECRET" };
+    const std::string oauth_scope { "https://www.google.com/m8/feeds" };
+
     struct user_data {
         std::string verification_url;
         std::string user_code;
