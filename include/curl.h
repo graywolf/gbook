@@ -8,7 +8,7 @@ extern "C" {
     #include <curl/curl.h>
 }
 
-namespace libgcon {
+namespace gbook {
     enum class method {
         GET, POST
     };
@@ -24,7 +24,7 @@ namespace libgcon {
         /**
          * Constructs and initializes this object.
          **/
-        curl() : handle_(curl_easy_init()), first_form_item_(NULL), header_list_(NULL), method_(libgcon::method::GET) {
+        curl() : handle_(curl_easy_init()), first_form_item_(NULL), header_list_(NULL), method_(gbook::method::GET) {
             if (handle_ == NULL) {
                 throw std::runtime_error("curl_easy_init return null");
             }
@@ -48,8 +48,8 @@ namespace libgcon {
         /**
          * Sets method to be used.
          *
-         * \param libgcon::method m Method to set as one to be used
-         * \return libgcon::curl& reference to (*this)
+         * \param gbook::method m Method to set as one to be used
+         * \return gbook::curl& reference to (*this)
          **/
         curl & method(method m) {
             method_ = m;
@@ -60,7 +60,7 @@ namespace libgcon {
          *
          * \param std::string name form field name
          * \param std::string value form field value
-         * \return libgcon::curl& reference to (*this)
+         * \return gbook::curl& reference to (*this)
          **/
         curl & form_field(std::string name, std::string value) {
             auto ret = form_fields_.insert(std::pair<std::string, std::string>(name, value));
@@ -74,7 +74,7 @@ namespace libgcon {
          *
          * \param std::string name header name
          * \param std::string value header value
-         * \return libgcon::curl& reference to (*this)
+         * \return gbook::curl& reference to (*this)
          **/
         curl & header(std::string name, std::string value) {
             auto ret = headers_.insert(std::pair<std::string, std::string>(name, value));
@@ -86,7 +86,7 @@ namespace libgcon {
         /**
          * Sets target url.
          *
-         * \return libgcon::curl& reference to (*this)
+         * \return gbook::curl& reference to (*this)
          **/
         curl & url(std::string url) {
             CURLcode res = curl_easy_setopt(handle_, CURLOPT_URL, url.c_str());
@@ -104,10 +104,10 @@ namespace libgcon {
             curl_easy_setopt(handle_, CURLOPT_WRITEFUNCTION, received_body_writer);
             curl_easy_setopt(handle_, CURLOPT_WRITEDATA, &received_body_);
             switch (method_) {
-                case libgcon::method::GET:
+                case gbook::method::GET:
                     res = curl_easy_setopt(handle_, CURLOPT_HTTPGET, 1);
                     break;
-                case libgcon::method::POST:
+                case gbook::method::POST:
                     process_form_fields();
                     res = curl_easy_setopt(handle_, CURLOPT_HTTPPOST, first_form_item_);
                     break;
@@ -136,7 +136,7 @@ namespace libgcon {
         std::map<std::string, std::string> headers_;
         curl_httppost * first_form_item_;
         curl_slist * header_list_;
-        libgcon::method method_;
+        gbook::method method_;
         std::string received_body_;
 
         curl & process_form_fields() {

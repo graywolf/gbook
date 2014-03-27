@@ -37,22 +37,16 @@ CMAKE_MINIMUM_REQUIRED(
         2.8
 )
 
-ADD_EXECUTABLE(
-    ${PROJECT_NAME}
-        src/main.cpp
-        ${PROJECT_FILES}
-)
-
-ADD_EXECUTABLE(
-    test_it
-        test/gtest.cpp
-        ${PROJECT_FILES}
-)
-
 INCLUDE_DIRECTORIES(
     ${CMAKE_CURRENT_BINARY_DIR}
     lib/tinyxml2
     include
+)
+
+ADD_EXECUTABLE(
+    ${PROJECT_NAME}
+        src/main.cpp
+        ${PROJECT_FILES}
 )
 
 TARGET_LINK_LIBRARIES(
@@ -61,6 +55,12 @@ TARGET_LINK_LIBRARIES(
     ${CURL_LIBRARY}
     ${JSONCPP_LIBRARIES}
     ${TINYXML_LIBRARIES}
+)
+
+ADD_EXECUTABLE(
+    test_it
+        test/gtest.cpp
+        ${PROJECT_FILES}
 )
 
 TARGET_LINK_LIBRARIES(
@@ -72,6 +72,18 @@ TARGET_LINK_LIBRARIES(
     ${TINYXML_LIBRARIES}
 )
 
+ADD_EXECUTABLE(
+    test_google_stuff
+        test/google_stuff.cpp
+        ${PROJECT_FILES}
+)
+
+TARGET_LINK_LIBRARIES(
+    test_google_stuff
+    ${CURL_LIBRARY}
+    ${JSONCPP_LIBRARIES}
+    ${TINYXML_LIBRARIES}
+)
 
 # a custom target that is always built
 ADD_CUSTOM_TARGET(

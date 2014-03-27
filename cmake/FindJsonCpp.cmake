@@ -9,19 +9,13 @@
 #  also defined, but not for general use are
 #  JSONCPP_LIBRARY, where to find the jsoncpp library.
 
-FIND_PATH(JSONCPP_INCLUDE_DIR jsoncpp/json.h
+FIND_PATH(JSONCPP_INCLUDE_DIR json/features.h
 /usr/local/include
 /usr/include
+/usr/include/jsoncpp
 )
 
-# Get the GCC compiler version
-EXEC_PROGRAM(${CMAKE_CXX_COMPILER}
-            ARGS ${CMAKE_CXX_COMPILER_ARG1} -dumpversion
-            OUTPUT_VARIABLE _gcc_COMPILER_VERSION
-            OUTPUT_STRIP_TRAILING_WHITESPACE
-            )
-
-SET(JSONCPP_NAMES ${JSONCPP_NAMES} libjson_linux-gcc-${_gcc_COMPILER_VERSION}_libmt.so)
+SET(JSONCPP_NAMES ${JSONCPP_NAMES} libjsoncpp.so)
 FIND_LIBRARY(JSONCPP_LIBRARY
   NAMES ${JSONCPP_NAMES}
   PATHS /usr/lib /usr/local/lib
@@ -33,7 +27,6 @@ IF (JSONCPP_LIBRARY AND JSONCPP_INCLUDE_DIR)
 ELSE (JSONCPP_LIBRARY AND JSONCPP_INCLUDE_DIR)
   SET(JSONCPP_FOUND "NO")
 ENDIF (JSONCPP_LIBRARY AND JSONCPP_INCLUDE_DIR)
-
 
 IF (JSONCPP_FOUND)
    IF (NOT JSONCPP_FIND_QUIETLY)

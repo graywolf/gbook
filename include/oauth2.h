@@ -9,9 +9,8 @@
 #include <fstream>
 #include <chrono>
 #include <thread>
-#include <boost/concept_check.hpp>
 
-namespace libgcon {
+namespace gbook {
 
     struct user_data {
         std::string verification_url;

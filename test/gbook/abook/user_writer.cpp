@@ -3,7 +3,7 @@
 #include <sstream>
 
 using namespace std;
-using namespace gbook::abook;
+using namespace gbook;
 
 TEST (GbookAbookUserWriter, writeOneFullUser) {
     user u;

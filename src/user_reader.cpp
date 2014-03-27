@@ -5,18 +5,14 @@
 #include <iostream>
 
 using namespace std;
-using namespace gbook::abook;
+using namespace gbook;
 
-vector<user> gbook::abook::load_users_from_stream(istream & input) {
+vector<user> gbook::load_users_from_stream(istream & input) {
     string data((std::istreambuf_iterator<char>(input)), std::istreambuf_iterator<char>());
-    /*char buffer[256];
-    while (input.read()) {
-        data.append(buffer);
-    }*/
     return parse_string(data);
 }
 
-vector<user> gbook::abook::parse_string(string input) {
+vector<user> gbook::parse_string(string input) {
     istringstream iss(input);
     string line;
 

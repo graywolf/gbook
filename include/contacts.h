@@ -8,7 +8,7 @@
 
 #include <iostream>
 
-namespace libgcon {
+namespace gbook {
     class contacts {
     public:
         contacts(oauth2 o2) : oauth2_(o2) {}
