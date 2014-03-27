@@ -1,114 +1,70 @@
 #include <iostream>
 #include <stdlib.h>
 #include <cstdlib>
-
-#include <boost/program_options.hpp>
-#include <boost/algorithm/string.hpp>
+#include <argp.h>
 
 #include "../include/config.h"
 
 using namespace std;
-namespace po = boost::program_options;
 
-po::options_description o_commands("Commands");
+enum sync_types { pull = 2, push = 4, twoway = 8 };
+enum commands { sync = 's', manage = 'm' };
 
-po::options_description o_sync("Sync");
-enum class sync_types { pull, push, both };
+sync_types sync_type;
+commands command;
 
-po::options_description o_add("Add");
-po::options_description o_manage("Manage");
-
-po::options_description o_general("General");
-
-po::options_description o_combined;
-
-po::variables_map vm;
-
-istream& operator>>(istream& in, sync_types& sync_type) {
-    std::string token;
-    in >> token;
-    if (boost::algorithm::iequals(token, "pull")) {
-        sync_type = sync_types::pull;
-    } else if (boost::algorithm::iequals(token, "push")) {
-        sync_type = sync_types::push;
-    } else if (boost::algorithm::iequals(token, "both")) {
-        sync_type = sync_types::both;
-    } else {
-        throw po::validation_error(po::validation_error::invalid_option_value, "sync-direction", token);
-    }
-    return in;
-}
-
-ostream& operator<<(ostream& out, sync_types& sync_type) {
-    switch(sync_type) {
-        case sync_types::both:
-            cout << "both";
+static int parse_opt(int key, char * arg, argp_state * state) {
+    switch (key) {
+        case 's':
+            command = commands::sync;
             break;
-        case sync_types::pull:
-            cout << "pull";
+        case 'm':
+            command = commands::manage;
             break;
-        case sync_types::push:
-            cout << "push";
+        case 't':
+            sync_type = sync_types::twoway;
+            break;
+        case 'u':
+            sync_type = sync_types::push;
+            break;
+        case 'd':
+            sync_type = sync_types::pull;
+            break;
+        default:
+            return ARGP_ERR_UNKNOWN;
             break;
     }
-    return out;
+    return 0;
 }
 
-void declare_program_options() {
-    o_commands.add_options()
-        ("sync,s", "synchronize contacts with backend")
-        ("add,a", "add new contact")
-        ("manage,m", "manage contacts using abook")
-        ("help,h", "prints help message")
-        ("version", "prints version information")
-    ;
+argp_option options[] = {
+    {0, 0, 0, 0, "Commands"},
+    {"synchronize", 's', 0, 0, "Synchronize contacts. Default if none command specified."},
+    {"manage", 'm', 0, 0, "Manage contacts using abook"},
+    {0, 0, 0, 0, "Synchronization direction - in which direction should sync be done. Only relevant if 'synchronize' command is used."},
+    {"two-way", 't', 0, 0, "two-way sync, default"},
+    {"up", 'u', 0, 0, "sync local changes to google server"},
+    {"down", 'd', 0, 0, "download changes from google server"},
+    {0}
+};
 
-    o_sync.add_options()
-        (
-            "sync-direction", po::value<sync_types>()->default_value(sync_types::both, "both"),
-            "In which direction do the synchronization, posible values are:\n\n"
-            "  both: \ttwo-way synchronization\n"
-            "  push: \tpush local changes to the server\n"
-            "  pull: \tpull changes from servet"
-        )
-    ;
-
-    o_combined.add(o_commands).add(o_sync).add(o_add).add(o_manage).add(o_general);
-}
-
-void parse(int argc, char ** argv) {
-    po::store(po::parse_command_line(argc, argv, o_combined), vm);
-    po::notify(vm);
-}
-
-void print_help(char ** argv) {
-    cout << "Usage: " << argv[0] << " [command] [options]" << endl << endl;
-    cout << "Each command can have some modifiers described in it's own section of this help message." << endl << endl;
-    cout << o_commands << endl;
-    cout << o_sync << endl;
-    cout << o_add << endl;
-    cout << o_manage << endl;
-    cout << o_general << endl;
-}
-
-void print_version() {
-    cout << "gBook version " << MAJOR_VERSION << "." << MINOR_VERSION << "." << REVISION << endl;
-}
+const char *argp_program_version = MAJOR_VERSION "." MINOR_VERSION "." REVISION;
+const char *argp_program_bug_address = "<paladin@jstation.cz>";
 
 int main(int argc, char **argv) {
     ios_base::sync_with_stdio(false);
     locale loc ("");
     locale::global (loc);
 
-    declare_program_options();
-    parse(argc, argv);
+    argp argp = { options, parse_opt, 0, "Synchronization tool between google contacts & abook data file."};
+    argp_parse(&argp, argc, argv, 0, 0, 0);
 
-    if (vm.count("version")) {
-        print_version();
-    } else if (vm.count("manage")) {
-        system("abook");
-    } else {
-        print_help(argv);
+    switch (command) {
+        case commands::manage:
+            system("abook");
+            break;
+        case commands::sync:
+            break;
     }
 
     return EXIT_SUCCESS;

@@ -2,9 +2,34 @@ SET(
     PROJECT_NAME
     gbook
 )
-
 PROJECT(
     ${PROJECT_NAME}
+)
+
+SET(
+    CMAKE_CXX_FLAGS
+        "${CMAKE_CXX_FLAGS} -g -fno-rtti -Wall -std=c++11"
+)
+SET(
+    PROJECT_FILES
+        lib/tinyxml2/tinyxml2.cpp
+        src/user_reader.cpp
+)
+SET(
+    CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake
+)
+
+FIND_PACKAGE(
+    CURL
+    REQUIRED
+)
+FIND_PACKAGE(
+    JsonCpp
+    REQUIRED
+)
+FIND_PACKAGE(
+    TinyXML
+    REQUIRED
 )
 
 CMAKE_MINIMUM_REQUIRED(
@@ -12,53 +37,41 @@ CMAKE_MINIMUM_REQUIRED(
         2.8
 )
 
-SET(
-    CMAKE_CXX_FLAGS
-        "${CMAKE_CXX_FLAGS} -g -Wall -std=c++11"
-)
-
 ADD_EXECUTABLE(
     ${PROJECT_NAME}
         src/main.cpp
+        ${PROJECT_FILES}
 )
 
 ADD_EXECUTABLE(
     test_it
         test/gtest.cpp
-        lib/abook/user_reader.cpp
-)
-
-FIND_PACKAGE(
-    Boost 1.55
-    COMPONENTS
-        program_options
-    REQUIRED
+        ${PROJECT_FILES}
 )
 
 INCLUDE_DIRECTORIES(
-    ${Boost_INCLUDE_DIR}
-)
-
-INCLUDE_DIRECTORIES(
-    lib/abook
+    ${CMAKE_CURRENT_BINARY_DIR}
+    lib/tinyxml2
+    include
 )
 
 TARGET_LINK_LIBRARIES(
     ${PROJECT_NAME}
 
-    ${Boost_LIBRARIES}
+    ${CURL_LIBRARY}
+    ${JSONCPP_LIBRARIES}
+    ${TINYXML_LIBRARIES}
 )
 
 TARGET_LINK_LIBRARIES(
     test_it
 
     gtest
+    ${CURL_LIBRARY}
+    ${JSONCPP_LIBRARIES}
+    ${TINYXML_LIBRARIES}
 )
 
-# include the output directory, where the version.h file is generated
-INCLUDE_DIRECTORIES(
-    ${CMAKE_CURRENT_BINARY_DIR}
-)
 
 # a custom target that is always built
 ADD_CUSTOM_TARGET(
