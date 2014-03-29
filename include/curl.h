@@ -10,7 +10,7 @@ extern "C" {
 
 namespace gbook {
     enum class method {
-        GET, POST
+        GET, POST, SIMPLE_POST, PUT, DELETE
     };
     size_t received_body_writer(char * ptr, size_t size, size_t nmemb, std::string received_body);
     /**
@@ -108,6 +108,31 @@ namespace gbook {
                     process_form_fields();
                     res = curl_easy_setopt(handle_, CURLOPT_HTTPPOST, first_form_item_);
                     break;
+                case gbook::method::SIMPLE_POST:
+                    res = curl_easy_setopt(handle_, CURLOPT_POST, 1);
+                    if (res != CURLE_OK) {
+                        throw std::runtime_error(std::string("Cannot set method: ").append(curl_easy_strerror(res)));
+                    }
+                    res = curl_easy_setopt(handle_, CURLOPT_POSTFIELDS, post_body_.c_str());
+                    if (res != CURLE_OK) {
+                        throw std::runtime_error(std::string("Cannot set method: ").append(curl_easy_strerror(res)));
+                    }
+                    res = curl_easy_setopt(handle_, CURLOPT_POSTFIELDSIZE, post_body_.length());
+                    break;
+                case gbook::method::PUT:
+                    res = curl_easy_setopt(handle_, CURLOPT_CUSTOMREQUEST, "PUT");
+                    if (res != CURLE_OK) {
+                        throw std::runtime_error(std::string("Cannot set method: ").append(curl_easy_strerror(res)));
+                    }
+                    res = curl_easy_setopt(handle_, CURLOPT_POSTFIELDS, post_body_.c_str());
+                    if (res != CURLE_OK) {
+                        throw std::runtime_error(std::string("Cannot set method: ").append(curl_easy_strerror(res)));
+                    }
+                    res = curl_easy_setopt(handle_, CURLOPT_POSTFIELDSIZE, post_body_.length());
+                    break;
+                case gbook::method::DELETE:
+                    res = curl_easy_setopt(handle_, CURLOPT_CUSTOMREQUEST, "DELETE");
+                    break;
             }
             if (res != CURLE_OK) {
                 throw std::runtime_error(std::string("Cannot set method: ").append(curl_easy_strerror(res)));
@@ -120,12 +145,26 @@ namespace gbook {
             }
         }
         /**
+         * Sets body for POST request.
+         **/
+        void set_body(std::string body) {
+            post_body_ = body;
+        }
+        /**
          * Gets body returned from the request.
          *
          * \return std::string
          **/
         std::string received_body() const {
             return received_body_;
+        }
+        /**
+         * Returns status code.
+         **/
+        long return_code() {
+            long http_code;
+            curl_easy_getinfo(handle_, CURLINFO_RESPONSE_CODE, &http_code);
+            return http_code;
         }
     private:
         CURL * handle_;
@@ -134,6 +173,7 @@ namespace gbook {
         curl_httppost * first_form_item_;
         curl_slist * header_list_;
         gbook::method method_;
+        std::string post_body_;
         std::string received_body_;
 
         curl & process_form_fields() {

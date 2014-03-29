@@ -95,6 +95,7 @@ vector<user> gbook::parse_string(string input) {
                         current_user.custom4 = value;
                     } else if (key == "custom5") {
                         current_user.custom5 = value;
+                        current_user.set_id("abook", value);
                     } else {
                         //uknown key, let's ignore this line
                     }

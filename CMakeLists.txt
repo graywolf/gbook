@@ -14,6 +14,7 @@ SET(
     PROJECT_FILES
         lib/tinyxml2/tinyxml2.cpp
         src/user_reader.cpp
+        src/user_writer.cpp
         src/contacts.cpp
         src/curl.cpp
 )

@@ -24,6 +24,38 @@ int main(int argc, char ** argv) {
     }
 
     contacts cs(o2);
-    cs.get_all();
+    //cs.get_all();
+
+    user u;
+    u.name = "Test Tester";
+    u.address = "Patkova 3";
+    u.address2 = "room 918";
+    u.city = "Prague";
+    u.state = "Prague province";
+    u.zip = "18000";
+    u.country = "CR";
+    u.phone = "1";
+    u.workphone = "2";
+    u.fax = "3";
+    u.mobile = "4";
+    u.nick = "nick";
+    u.url = "t.t";
+    u.notes = "notest uber notes";
+    u.anniversary = "1993-02-24";
+    u.custom1 = "c1";
+    u.custom2 = "c2";
+    u.custom3 = "c3";
+    u.custom4 = "c4";
+    u.custom5 = "c5";
+    u.emails.push_back("tt@example.com");
+    u.emails.push_back("tt2@example.com");
+    u.groups.push_back("a");
+    u.groups.push_back("b");
+    cs.add(u);
+
+    u.name = "Test Test2";
+    cs.update(u);
+
+    cs.remove(u.get_id("google"));
     return 0;
 }

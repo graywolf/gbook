@@ -3,6 +3,8 @@
 
 #include <string>
 #include <vector>
+#include <map>
+#include <stdexcept>
 
 namespace gbook {
     /**
@@ -126,7 +128,48 @@ namespace gbook {
                     && custom4.empty()
                     && custom5.empty();
         }
+
+        bool operator==(const user & other) {
+            return     name == other.name
+                    && emails == other.emails
+                    && address == other.address
+                    && address2 == other.address2
+                    && city == other.city
+                    && state == other.state
+                    && zip == other.zip
+                    && country == other.country
+                    && phone == other.phone
+                    && workphone == other.workphone
+                    && fax == other.fax
+                    && mobile == other.mobile
+                    && nick == other.nick
+                    && url == other.url
+                    && notes == other.notes
+                    && anniversary == other.anniversary
+                    && groups == other.groups
+                    && custom1 == other.custom1
+                    && custom2 == other.custom2
+                    && custom3 == other.custom3
+                    && custom4 == other.custom4
+                    && custom5 == other.custom5;
+        }
+
+        std::string get_id(std::string key) {
+            auto it = ids_.find(key);
+            if (it != ids_.end()) {
+                return ids_.find(key)->second;
+            } else {
+                throw std::invalid_argument("No such id.");
+            }
+        }
+        void set_id(std::string key, std::string id) {
+            auto ret = ids_.insert(std::pair<std::string, std::string>(key, id));
+            if (!ret.second) {
+                ret.first->second = id;
+            }
+        }
     private:
+        std::map<std::string, std::string> ids_;
     };
 }
 
