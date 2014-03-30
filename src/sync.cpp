@@ -112,6 +112,17 @@ void sync::abook_to_google() {
 
 void sync::google_to_abook() {
     contacts cs(o2_);
+    //let's find out deleted
+    for (auto & it : google_abook_id_map_) {
+        //there is deleted
+        if (google_id_map_.find(it.first) == google_id_map_.end()) {
+            //delete from abook
+            if (abook_id_map_.find(it.second) != abook_id_map_.end()) {
+                cout << "Deleting " << abook_id_map_[it.second].name << " from abook." << endl;
+                abook_id_map_.erase(it.second);
+            }
+        }
+    }
     for (auto & it : google_id_map_) {
         //this is new contact from google
         if (google_abook_id_map_.find(it.second.get_id("google")) == google_abook_id_map_.end()) {
