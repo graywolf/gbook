@@ -119,6 +119,7 @@ void sync::google_to_abook() {
             //delete from abook
             if (abook_id_map_.find(it.second) != abook_id_map_.end()) {
                 cout << "Deleting " << abook_id_map_[it.second].name << " from abook." << endl;
+                abook_google_id_map_.erase(it.second);
                 abook_id_map_.erase(it.second);
             }
         }
