@@ -5,12 +5,12 @@
 
 #include "../include/config.h"
 
+#include "sync.h"
+
 using namespace std;
 
-enum sync_types { pull = 2, push = 4, twoway = 8 };
-enum commands { sync = 's', manage = 'm' };
+enum class commands { sync = 's', manage = 'm' };
 
-sync_types sync_type;
 commands command;
 
 static int parse_opt(int key, char * arg, argp_state * state) {
@@ -20,15 +20,6 @@ static int parse_opt(int key, char * arg, argp_state * state) {
             break;
         case 'm':
             command = commands::manage;
-            break;
-        case 't':
-            sync_type = sync_types::twoway;
-            break;
-        case 'u':
-            sync_type = sync_types::push;
-            break;
-        case 'd':
-            sync_type = sync_types::pull;
             break;
         default:
             return ARGP_ERR_UNKNOWN;
@@ -41,10 +32,6 @@ argp_option options[] = {
     {0, 0, 0, 0, "Commands"},
     {"synchronize", 's', 0, 0, "Synchronize contacts. Default if none command specified."},
     {"manage", 'm', 0, 0, "Manage contacts using abook"},
-    {0, 0, 0, 0, "Synchronization direction - in which direction should sync be done. Only relevant if 'synchronize' command is used."},
-    {"two-way", 't', 0, 0, "two-way sync, default"},
-    {"up", 'u', 0, 0, "sync local changes to google server"},
-    {"down", 'd', 0, 0, "download changes from google server"},
     {0}
 };
 
@@ -56,6 +43,8 @@ int main(int argc, char **argv) {
     locale loc ("");
     locale::global (loc);
 
+    command = commands::sync;
+
     argp argp = { options, parse_opt, 0, "Synchronization tool between google contacts & abook data file."};
     argp_parse(&argp, argc, argv, 0, 0, 0);
 
@@ -64,6 +53,10 @@ int main(int argc, char **argv) {
             system("abook");
             break;
         case commands::sync:
+            string abook_dir = getenv("HOME");
+            abook_dir.append("/.abook");
+            gbook::sync s(abook_dir);
+            s.do_sync();
             break;
     }
 

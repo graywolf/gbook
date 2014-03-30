@@ -154,6 +154,10 @@ namespace gbook {
                     && custom5 == other.custom5;
         }
 
+        bool operator!=(const user & other) {
+            return ! (*this == other);
+        }
+
         std::string get_id(std::string key) {
             auto it = ids_.find(key);
             if (it != ids_.end()) {
@@ -167,6 +171,15 @@ namespace gbook {
             if (!ret.second) {
                 ret.first->second = id;
             }
+        }
+        bool has_address() {
+            return ! (address.empty()
+                    &&address2.empty()
+                    &&city.empty()
+                    &&zip.empty()
+                    &&state.empty()
+                    &&country.empty()
+            );
         }
     private:
         std::map<std::string, std::string> ids_;

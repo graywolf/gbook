@@ -17,6 +17,7 @@ SET(
         src/user_writer.cpp
         src/contacts.cpp
         src/curl.cpp
+        src/sync.cpp
 )
 SET(
     CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake

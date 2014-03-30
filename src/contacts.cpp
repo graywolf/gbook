@@ -10,7 +10,8 @@ using namespace tinyxml2;
 
 vector<user> gbook::contacts::get_all() {
     vector<user> users;
-    string url = "https://www.google.com/m8/feeds/contacts/default/full";
+    string url = "https://www.google.com/m8/feeds/contacts/default/full?group=";
+    url.append(my_contacts_group_id);
     do {
         curl c;
         prepare_curl(c);
@@ -20,7 +21,11 @@ vector<user> gbook::contacts::get_all() {
 
         XMLDocument d;
         d.Parse(c.received_body().c_str());
-        for (XMLElement * entry = d.FirstChildElement("feed")->FirstChildElement("entry"); entry != NULL; entry = entry->NextSiblingElement("entry")) {
+        XMLElement * feed = d.FirstChildElement("feed");
+        if (!feed) {
+            throw runtime_error(string("No feed element: ").append(c.received_body()));
+        }
+        for (XMLElement * entry = feed->FirstChildElement("entry"); entry != NULL; entry = entry->NextSiblingElement("entry")) {
             user u;
             map_entry_to_user(entry, u);
             users.push_back(u);
@@ -162,13 +167,15 @@ void contacts::map_entry_to_user(XMLElement* entry, gbook::user& u) {
     }
     for (XMLElement * field = entry->FirstChildElement("gContact:userDefinedField"); field != NULL; field = field->NextSiblingElement("gContact:userDefinedField")) {
         if (field->Attribute("key", "groups")) {
-            u.groups.clear();
             string group_string = safe_assign_string(field->Attribute("value"));
-            while (group_string.find(",") != string::npos) {
-                u.groups.push_back(group_string.substr(0, group_string.find(",")));
-                group_string = group_string.substr(group_string.find(",")+1);
+            if (!group_string.empty()) {
+                u.groups.clear();
+                while (group_string.find(",") != string::npos) {
+                    u.groups.push_back(group_string.substr(0, group_string.find(",")));
+                    group_string = group_string.substr(group_string.find(",")+1);
+                }
+                u.groups.push_back(group_string);
             }
-            u.groups.push_back(group_string);
         } else if (field->Attribute("key", "c1")) {
             u.custom1 = safe_assign_string(field->Attribute("value"));
         } else if (field->Attribute("key", "c2")) {
@@ -218,32 +225,63 @@ void contacts::map_user_to_entry(user& u, XMLElement* entry, XMLDocument & d) {
     entry->SetAttribute("xmlns:gd", "http://schemas.google.com/g/2005");
     entry->SetAttribute("xmlns:gContact", "http://schemas.google.com/contact/2008");
     add_xml_element(d, entry, "atom:category", { {"scheme", "http://schemas.google.com/g/2005#kind"}, {"term", "http://schemas.google.com/contact/2008#contact"} });
+    add_xml_element(d, entry, "gContact:groupMembershipInfo", { {"href", my_contacts_group_id} });
 
-    add_xml_element(d, add_xml_element(d, entry, "gd:name"), "gd:fullName", u.name);
+    if (!u.name.empty()) {
+        add_xml_element(d, add_xml_element(d, entry, "gd:name"), "gd:fullName", u.name);
+    }
 
     for (string email : u.emails) {
         add_xml_element(d, entry, "gd:email", { {"address", email}, { "rel", "http://schemas.google.com/g/2005#other" } });
     }
 
-    XMLElement * address_root = add_xml_element(d, entry, "gd:structuredPostalAddress", { { "rel", "http://schemas.google.com/g/2005#other" } });
-    add_xml_element(d, address_root, "gd:street", u.address);
-    add_xml_element(d, address_root, "gd:city", u.city);
-    add_xml_element(d, address_root, "gd:region", u.state);
-    add_xml_element(d, address_root, "gd:postcode", u.zip);
-    add_xml_element(d, address_root, "gd:country", u.country);
+    if (u.has_address()) {
+        XMLElement * address_root = add_xml_element(d, entry, "gd:structuredPostalAddress", { { "rel", "http://schemas.google.com/g/2005#other" } });
+        if (!u.address.empty()) {
+            add_xml_element(d, address_root, "gd:street", u.address);
+        }
+        if (!u.city.empty()) {
+            add_xml_element(d, address_root, "gd:city", u.city);
+        }
+        if (!u.state.empty()) {
+            add_xml_element(d, address_root, "gd:region", u.state);
+        }
+        if (!u.zip.empty()) {
+            add_xml_element(d, address_root, "gd:postcode", u.zip);
+        }
+        if (!u.country.empty()) {
+            add_xml_element(d, address_root, "gd:country", u.country);
+        }
+    }
 
-    add_xml_element(d, entry, "gd:phoneNumber", u.phone, { { "rel", "http://schemas.google.com/g/2005#home" } } );
-    add_xml_element(d, entry, "gd:phoneNumber", u.workphone, { { "rel", "http://schemas.google.com/g/2005#work" } } );
-    add_xml_element(d, entry, "gd:phoneNumber", u.fax, { { "rel", "http://schemas.google.com/g/2005#fax" } } );
-    add_xml_element(d, entry, "gd:phoneNumber", u.mobile, { { "rel", "http://schemas.google.com/g/2005#mobile" } } );
+    if (!u.phone.empty()) {
+        add_xml_element(d, entry, "gd:phoneNumber", u.phone, { { "rel", "http://schemas.google.com/g/2005#home" } } );
+    }
+    if (!u.workphone.empty()) {
+        add_xml_element(d, entry, "gd:phoneNumber", u.workphone, { { "rel", "http://schemas.google.com/g/2005#work" } } );
+    }
+    if (!u.fax.empty()) {
+        add_xml_element(d, entry, "gd:phoneNumber", u.fax, { { "rel", "http://schemas.google.com/g/2005#fax" } } );
+    }
+    if (!u.mobile.empty()) {
+        add_xml_element(d, entry, "gd:phoneNumber", u.mobile, { { "rel", "http://schemas.google.com/g/2005#mobile" } } );
+    }
 
-    add_xml_element(d, entry, "gContact:nickname", u.nick);
+    if (!u.nick.empty()) {
+        add_xml_element(d, entry, "gContact:nickname", u.nick);
+    }
 
-    add_xml_element(d, entry, "gContact:website", { { "href", u.url }, { "rel", "home-page" } });
+    if (!u.url.empty()) {
+        add_xml_element(d, entry, "gContact:website", { { "href", u.url }, { "rel", "home-page" } });
+    }
 
-    add_xml_element(d, entry, "content", u.notes);
+    if (!u.notes.empty()) {
+        add_xml_element(d, entry, "atom:content", u.notes, { { "type", "text" } });
+    }
 
-    add_xml_element(d, entry, "gContact:birthday", { { "when", u.anniversary } });
+    if (!u.anniversary.empty()) {
+        add_xml_element(d, entry, "gContact:birthday", { { "when", u.anniversary } });
+    }
 
     string group_string;
     for (auto group : u.groups) {
