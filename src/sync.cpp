@@ -69,6 +69,7 @@ void sync::abook_to_google() {
                 ids_changed_in_abook_.insert(it.second.custom5);
                 cs.remove(abook_google_id_map_[it.second.custom5]);
                 //remove it from two-way map
+                google_id_map_.erase(abook_google_id_map_[it.second.custom5]);
                 google_abook_id_map_.erase(abook_google_id_map_[it.second.custom5]);
                 abook_google_id_map_.erase(it.second.custom5);
             } catch (runtime_error re) {
@@ -116,6 +117,8 @@ void sync::google_to_abook() {
         if (google_abook_id_map_.find(it.second.get_id("google")) == google_abook_id_map_.end()) {
             cout << "Adding " << it.second.name << " to abook." << endl;
             it.second.custom5 = to_string(++max_id_);
+            //push custom5 upstream
+            cs.update(it.second);
             abook_id_map_[it.second.custom5] = it.second;
             //add it to two-way map
             abook_google_id_map_.insert(pair<string, string>(it.second.custom5, it.second.get_id("google")));

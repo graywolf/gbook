@@ -157,13 +157,13 @@ void contacts::map_entry_to_user(XMLElement* entry, gbook::user& u) {
         u.nick = safe_assign_string(entry->FirstChildElement("gContact:nickname")->GetText());
     }
     if (entry->FirstChildElement("gContact:website")) {
-        u.nick = safe_assign_string(entry->FirstChildElement("gContact:website")->Attribute("href"));
+        u.url = safe_assign_string(entry->FirstChildElement("gContact:website")->Attribute("href"));
     }
     if (entry->FirstChildElement("content")) {
         u.notes = safe_assign_string(entry->FirstChildElement("content")->GetText());
     }
     if (entry->FirstChildElement("gContact:birthday")) {
-        u.nick = safe_assign_string(entry->FirstChildElement("gContact:birthday")->Attribute("when"));
+        u.anniversary = safe_assign_string(entry->FirstChildElement("gContact:birthday")->Attribute("when"));
     }
     for (XMLElement * field = entry->FirstChildElement("gContact:userDefinedField"); field != NULL; field = field->NextSiblingElement("gContact:userDefinedField")) {
         if (field->Attribute("key", "groups")) {
