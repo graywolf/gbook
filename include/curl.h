@@ -60,10 +60,7 @@ namespace gbook {
          * \return gbook::curl& reference to (*this)
          **/
         curl & form_field(std::string name, std::string value) {
-            auto ret = form_fields_.insert(std::pair<std::string, std::string>(name, value));
-            if (!ret.second) {
-                ret.first->second = value;
-            }
+            form_fields_[name] = value;
             return * this;
         }
         /**
@@ -74,10 +71,7 @@ namespace gbook {
          * \return gbook::curl& reference to (*this)
          **/
         curl & header(std::string name, std::string value) {
-            auto ret = headers_.insert(std::pair<std::string, std::string>(name, value));
-            if (!ret.second) {
-                ret.first->second = value;
-            }
+            headers_[name] = value;
             return * this;
         }
         /**

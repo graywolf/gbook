@@ -167,10 +167,7 @@ namespace gbook {
             }
         }
         void set_id(std::string key, std::string id) {
-            auto ret = ids_.insert(std::pair<std::string, std::string>(key, id));
-            if (!ret.second) {
-                ret.first->second = id;
-            }
+            ids_[key] = id;
         }
         bool has_address() {
             return ! (address.empty()

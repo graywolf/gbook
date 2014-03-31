@@ -24,8 +24,8 @@ void sync::load_id_maps() {
     ifstream inf(gbook_id_file_);
     string abook_id, google_id;
     while (inf >> abook_id >> google_id) {
-        abook_google_id_map_.insert(pair<string, string>(abook_id, google_id));
-        google_abook_id_map_.insert(pair<string, string>(google_id, abook_id));
+        abook_google_id_map_[abook_id] = google_id;
+        google_abook_id_map_[google_id] = abook_id;
 
         long long id = stoll(abook_id);
         if (id > max_id_) {
@@ -84,8 +84,9 @@ void sync::abook_to_google() {
                 cout << "Adding " << it.second.name << " to google." << endl;
                 cs.add(it.second);
                 //add it to two-way map
-                abook_google_id_map_.insert(pair<string, string>(it.second.custom5, it.second.get_id("google")));
-                google_abook_id_map_.insert(pair<string, string>(it.second.get_id("google"), it.second.custom5));
+                google_id_map_[it.second.get_id("google")] = it.second;
+                abook_google_id_map_[it.second.custom5] = it.second.get_id("google");
+                google_abook_id_map_[it.second.get_id("google")] = it.second.custom5;
             } catch (runtime_error re) {
                 cerr << "Cannot add: " << re.what() << endl;
             }
@@ -133,8 +134,8 @@ void sync::google_to_abook() {
             cs.update(it.second);
             abook_id_map_[it.second.custom5] = it.second;
             //add it to two-way map
-            abook_google_id_map_.insert(pair<string, string>(it.second.custom5, it.second.get_id("google")));
-            google_abook_id_map_.insert(pair<string, string>(it.second.get_id("google"), it.second.custom5));
+            abook_google_id_map_[it.second.custom5] = it.second.get_id("google");
+            google_abook_id_map_[it.second.get_id("google")] = it.second.custom5;
         } else {
         //this contact is already in the db, test if there's need for update
             user & abook_user = abook_id_map_[google_abook_id_map_.find(it.second.get_id("google"))->second];
