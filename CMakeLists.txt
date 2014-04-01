@@ -95,7 +95,7 @@ ADD_CUSTOM_COMMAND(
     OUTPUT
         ${CMAKE_CURRENT_BINARY_DIR}/config.h
     COMMAND
-        ${CMAKE_COMMAND} -DSOURCE_DIR=${CMAKE_CURRENT_SOURCE_DIR} -P ${CMAKE_CURRENT_SOURCE_DIR}/getgit.cmake
+        ${CMAKE_COMMAND} -DSOURCE_DIR=${CMAKE_CURRENT_SOURCE_DIR} -P ${CMAKE_CURRENT_SOURCE_DIR}/cmake/getgit.cmake
 )
 
 # config.h is considered a generated file

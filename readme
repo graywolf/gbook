@@ -8,7 +8,11 @@ libcurl
 libjsoncpp
 gcc 4.8+ (c++11 support)
 
-2. Compilation & usage
+2. Settings & compilation & usage
+
+Settings:
+
+Google client id & secret are *compile-time* option, set correct values in include/oauth2.h.
 
 Compile using:
 
