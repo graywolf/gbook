@@ -10,9 +10,19 @@
 #include <iostream>
 
 namespace gbook {
+    /**
+     * Class representing interface to Google Contacts API.
+     **/
     class contacts {
     public:
+        /**
+         * Constructor
+         *
+         * \param gbook::oauth2 o2 initialized OAuth2 instance
+         **/
         contacts(oauth2 o2) : oauth2_(o2) {
+            // here we need to fetch id of "my contacts" contacts group - this is necessary, because
+            // we do not want contacts from auto groups like "Most Contacted" etc.
             curl c;
             prepare_curl(c);
             c.url("https://www.google.com/m8/feeds/groups/default/full");
@@ -41,11 +51,35 @@ namespace gbook {
                 throw std::runtime_error(std::string("Cannot find my contacts group: ").append(c.received_body()));
             }
         }
+        /**
+         * Gets all users from Google Contacts.
+         *
+         * \return std::vector<gbook::user>
+         **/
         std::vector<user> get_all();
-        void add(gbook::user& u);
+        /**
+         * Adds new user to Google Contacts.
+         *
+         * \param gbook::user u User to be added.
+         **/
+        void add(user u);
+        /**
+         * Updates user in Google Contacts.
+         *
+         * \param gbook::user u User to be updated.
+         **/
         void update(user u);
+        /**
+         * Removes user from Google Contacts.
+         *
+         * \param std::string id Id of user to be removed.
+         **/
         void remove(std::string id);
     private:
+        /**
+         * Sets common option to curl.
+         * \param gbook::curl& c Curl instance to operate on.
+         **/
         void prepare_curl(curl & c) {
             c.header("GData-Version", "3.0");
             c.header("Authorization", std::string("Bearer ").append(oauth2_.access_token()));
@@ -55,9 +89,17 @@ namespace gbook {
         /**
          * Maps google data user entry to gbook::user structure.
          *
-         * \return std::string id
+         * \param tinyxml::XMLElement* entry Root element of the user entity
+         * \param gbook::user& user User to fill from entity
          **/
         void map_entry_to_user(tinyxml2::XMLElement * entry, user &user);
+        /**
+         * Maps gbook::user structure to google data user entry.
+         *
+         * \param gbook::user& user User to put into entity
+         * \param tinyxml::XMLElement* entry Root element of the user entity
+         * \param tinyxml2::XMLDocument& d Document to use as parent of all new elements
+         **/
         void map_user_to_entry(gbook::user& user, tinyxml2::XMLElement* entry, tinyxml2::XMLDocument& d);
     };
 }

@@ -3,7 +3,21 @@ Content
 
 1. Requirements
 
-ncurses
-boost
 cmake
+libcurl
+libjsoncpp
 gcc 4.8+ (c++11 support)
+
+2. Compilation & usage
+
+Compile using:
+
+    cmake
+    make
+
+Use:
+
+    ./gbook
+
+There are two options, -s (--synchronize), which is default. It just synces changes. Second is
+-m (--manage), which for now just opens abook.

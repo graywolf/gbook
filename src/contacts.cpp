@@ -33,6 +33,7 @@ vector<user> gbook::contacts::get_all() {
 
         url.clear();
         for (XMLElement * link = d.FirstChildElement("feed")->FirstChildElement("link"); link != NULL; link = link->NextSiblingElement("link")) {
+            // get next page if it exists
             if (link->Attribute("rel", "next")) {
                 url = link->Attribute("href");
             }
@@ -41,7 +42,7 @@ vector<user> gbook::contacts::get_all() {
     return users;
 }
 
-void contacts::add(user & u) {
+void contacts::add(user u) {
     XMLDocument d;
     XMLElement * root = d.NewElement("x");
     d.InsertEndChild(root);

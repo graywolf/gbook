@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <cstdlib>
 #include <argp.h>
+#include <stdexcept>
 
 #include "../include/config.h"
 
@@ -53,10 +54,14 @@ int main(int argc, char **argv) {
             system("abook");
             break;
         case commands::sync:
-            string abook_dir = getenv("HOME");
-            abook_dir.append("/.abook");
-            gbook::sync s(abook_dir);
-            s.do_sync();
+            try {
+                string abook_dir = getenv("HOME");
+                abook_dir.append("/.abook");
+                gbook::sync s(abook_dir);
+                s.do_sync();
+            } catch (runtime_error re) {
+                cout << "Exception was caught: " << re.what() << endl;
+            }
             break;
     }
 

@@ -10,8 +10,7 @@ using namespace std;
 using namespace gbook;
 
 int main(int argc, char ** argv) {
-    string conffile = getenv("HOME");
-    conffile.append("/gbook/test/tmp/oauth2.conf");
+    conffile.append("/tmp/_A_oauth2.conf");
     oauth2 o2(conffile);
     if (o2.access_token().empty()) {
         user_data ud = o2.request_user_code();
@@ -24,7 +23,7 @@ int main(int argc, char ** argv) {
     }
 
     contacts cs(o2);
-    //cs.get_all();
+    cs.get_all();
 
     user u;
     u.name = "Test Tester";

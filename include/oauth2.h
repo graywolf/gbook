@@ -16,6 +16,9 @@ namespace gbook {
     const std::string client_secret { "YOUR-CLIENT-SECRET" };
     const std::string oauth_scope { "https://www.google.com/m8/feeds" };
 
+    /**
+     * Structure containing result of authentication request. Verification url and user code to input.
+     **/
     struct user_data {
         std::string verification_url;
         std::string user_code;
@@ -29,16 +32,27 @@ namespace gbook {
      **/
     class oauth2 {
     public:
+        /**
+         * Constructor reads auth & refresh token from data file.
+         **/
         oauth2(std::string conf_file) {
             conf_file_ = conf_file;
             std::ifstream inconf(conf_file);
             std::getline(inconf, access_token_);
             std::getline(inconf, refresh_token_);
         }
+        /**
+         * Destructor writes auth & refresh token to data file.
+         **/
         ~oauth2() {
             std::ofstream outconf(conf_file_, std::ios::trunc);
             outconf << access_token_ << "\n" << refresh_token_;
         }
+        /**
+         * Requests Google for details about how to authenticate user.
+         *
+         * \return user_data
+         **/
         user_data request_user_code() {
             try {
                 curl c;
@@ -67,6 +81,9 @@ namespace gbook {
                 throw std::runtime_error(std::string("Failed with error: ").append(e.what()));
             }
         }
+        /**
+         * Begins polling for access & refresh token. Ends 1) when received tokens 2) user code expires.
+         */
         void begin_polling() {
             std::chrono::system_clock::time_point polling_ends = request_ended_ + std::chrono::seconds(expires_in_);
             while (polling_ends > std::chrono::system_clock::now()) {
@@ -105,9 +122,17 @@ namespace gbook {
             }
             throw std::runtime_error("Polling timed out.");
         }
+        /**
+         * Getter method for access token.
+         *
+         * \return std::string access token
+         **/
         std::string access_token() {
             return access_token_;
         }
+        /**
+         * Refresh access token.
+         **/
         void refresh_access_token() {
             curl c;
             c.url("https://accounts.google.com/o/oauth2/token");

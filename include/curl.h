@@ -12,6 +12,7 @@ namespace gbook {
     enum class method {
         GET, POST, SIMPLE_POST, PUT, DELETE
     };
+    // method to save body received from the server
     size_t received_body_writer(char * ptr, size_t size, size_t nmemb, std::string received_body);
     /**
      * Overlay class for CURL.
@@ -36,12 +37,67 @@ namespace gbook {
             if (header_list_ != NULL) {
                 curl_slist_free_all(header_list_);
             }
-            curl_easy_cleanup(handle_);
+            if (handle_ != NULL) {
+                curl_easy_cleanup(handle_);
+            }
         }
+        // disable copy
         curl(curl &) =delete;
-        curl(curl &&) =delete;
         curl & operator=(curl &) =delete;
-        curl & operator=(curl && c) =delete;
+        // enable move
+        curl(curl && other) {
+            handle_ = other.handle_;
+            other.handle_ = NULL;
+
+            form_fields_.swap(other.form_fields_);
+
+            headers_.swap(other.headers_);
+
+            first_form_item_ = other.first_form_item_;
+            other.first_form_item_ = NULL;
+
+            header_list_ = other.header_list_;
+            other.header_list_ = NULL;
+
+            method_ = other.method_;
+            other.method_ = gbook::method::GET;
+
+            post_body_ = other.post_body_;
+            other.post_body_.clear();
+
+            received_body_ = other.received_body_;
+            other.received_body_.clear();
+        };
+        curl & operator=(curl && other) {
+            if (handle_ != NULL) {
+                curl_easy_cleanup(handle_);
+            }
+            handle_ = other.handle_;
+            other.handle_ = NULL;
+
+            form_fields_.clear();
+            form_fields_.swap(other.form_fields_);
+
+            headers_.clear();
+            headers_.swap(other.headers_);
+
+            first_form_item_ = other.first_form_item_;
+            other.first_form_item_ = NULL;
+
+            header_list_ = other.header_list_;
+            other.header_list_ = NULL;
+
+            method_ = other.method_;
+            other.method_ = gbook::method::GET;
+
+            post_body_ = other.post_body_;
+            other.post_body_.clear();
+
+            received_body_ = other.received_body_;
+            other.received_body_.clear();
+
+            return *this;
+        };
         /**
          * Sets method to be used.
          *
@@ -170,6 +226,11 @@ namespace gbook {
         std::string post_body_;
         std::string received_body_;
 
+        /**
+         * Compiles form fields & values into usable structure.
+         *
+         * \return gbook::curl& * this
+         **/
         curl & process_form_fields() {
             curl_httppost * lastptr = NULL;
 
@@ -184,6 +245,11 @@ namespace gbook {
             }
             return * this;
         }
+        /**
+         * Compiles header fields & values into usable structure.
+         *
+         * \return gbook::curl& * this
+         **/
         curl & process_headers() {
             for (auto header : headers_) {
                 std::string header_line = header.first;
