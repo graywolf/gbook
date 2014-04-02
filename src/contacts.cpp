@@ -42,7 +42,7 @@ vector<user> gbook::contacts::get_all() {
     return users;
 }
 
-void contacts::add(user u) {
+void contacts::add(user & u) {
     XMLDocument d;
     XMLElement * root = d.NewElement("x");
     d.InsertEndChild(root);

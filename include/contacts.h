@@ -60,9 +60,9 @@ namespace gbook {
         /**
          * Adds new user to Google Contacts.
          *
-         * \param gbook::user u User to be added.
+         * \param gbook::user& u User to be added.
          **/
-        void add(user u);
+        void add(user & u);
         /**
          * Updates user in Google Contacts.
          *

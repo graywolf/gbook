@@ -1,5 +1,10 @@
-Content
-    1. Requirements
+0. Prolog
+
+Gbook is simple application dedicated to synchronizing contacts between abook data file
+and google contacts.
+
+Right now it only support abook data file in default location (~/.abook/addressbook). This
+will probably change.
 
 1. Requirements
 
