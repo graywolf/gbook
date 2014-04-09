@@ -2,7 +2,6 @@
 #include "user.h"
 
 #include "user_writer.h"
-#include <boost/concept_check.hpp>
 
 using namespace std;
 using namespace gbook;
