@@ -64,7 +64,11 @@ TARGET_LINK_LIBRARIES(
 
 FIND_LIBRARY(
     GTEST_LIBRARY
-        gtest libs/gtest-1.7.0/lib/.libs
+        gtest lib/gtest-1.7.0/lib/.libs
+)
+FIND_LIBRARY(
+    GMOCK_LIBRARY
+        gtest lib/gmock-1.7.0/lib/.libs
 )
 
 ADD_EXECUTABLE(
@@ -77,6 +81,7 @@ TARGET_LINK_LIBRARIES(
     test_it
 
     ${GTEST_LIBRARY}
+    ${GMOCK_LIBRARY}
     ${CURL_LIBRARY}
     ${JSONCPP_LIBRARIES}
 )
