@@ -25,15 +25,17 @@ namespace gbook {
             gbook_sync_record_(abook_folder + "/gbook_sync_record"),
             gbook_id_file_(abook_folder + "/gbook_id_file"),
             max_id_(0LL),
-            o2_(abook_folder + "/o2_auth")
+            o2_(abook_folder + "/o2_config")
             {
                 if (o2_.access_token().empty()) {
+                    std::cout << "Access token is empty, contacting server..." << std::endl;
                     user_data ud = o2_.request_user_code();
-                    std::cout << "User code: " << ud.user_code << std::endl;
-                    std::cout << "Verification url: " << ud.verification_url << std::endl;
+                    std::cout << "Go to: " << ud.verification_url << std::endl;
+                    std::cout << "And enter code: " << ud.user_code << std::endl;
                     o2_.begin_polling();
-                    std::cout << "Ok, we got access token." << std::endl;
+                    std::cout << "Ok, we've got access token." << std::endl;
                 } else {
+                    std::cout << "Refreshing access token." << std::endl;
                     o2_.refresh_access_token();
                 }
             }

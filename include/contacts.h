@@ -20,7 +20,7 @@ namespace gbook {
          *
          * \param gbook::oauth2 o2 initialized OAuth2 instance
          **/
-        contacts(oauth2 o2) : oauth2_(o2) {
+        contacts(oauth2 & o2) : oauth2_(o2) {
             // here we need to fetch id of "my contacts" contacts group - this is necessary, because
             // we do not want contacts from auto groups like "Most Contacted" etc.
             curl c;

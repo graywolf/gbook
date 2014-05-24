@@ -51,16 +51,23 @@ int main(int argc, char **argv) {
 
     switch (command) {
         case commands::manage:
+            cout << "Starting abook..." << endl;
             system("abook");
+            cout << "Abook finished." << endl;
             break;
         case commands::sync:
             try {
+                cout << "Starting sync" << endl;
                 string abook_dir = getenv("HOME");
                 abook_dir.append("/.abook");
+                cout << "Abook directory determined as: " << abook_dir << endl;
                 gbook::sync s(abook_dir);
                 s.do_sync();
+                cout << "Sync finished." << endl;
             } catch (runtime_error re) {
-                cout << "Exception was caught: " << re.what() << endl;
+                cout << re.what() << endl;
+            } catch (invalid_argument re) {
+                cout << re.what() << endl;
             }
             break;
     }

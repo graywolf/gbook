@@ -21,6 +21,7 @@ void sync::do_sync() {
 }
 
 void sync::load_id_maps() {
+    cout << "Loading gbook <--> abook mapping... ";
     ifstream inf(gbook_id_file_);
     string abook_id, google_id;
     while (inf >> abook_id >> google_id) {
@@ -32,9 +33,11 @@ void sync::load_id_maps() {
             max_id_ = id;
         }
     }
+    cout << "Loaded." << endl;
 }
 
 void sync::load_abook() {
+    cout << "Loading abook... ";
     ifstream inf(abook_data_file_);
     vector<user> abook_users = load_users_from_stream(inf);
     for (user & u : abook_users) {
@@ -43,25 +46,32 @@ void sync::load_abook() {
         }
         abook_id_map_[u.custom5] = u;
     }
+    cout << "Loaded." << endl;
 
+    cout << "Loading records of last sync... ";
     ifstream inf_sync_record(gbook_sync_record_);
     vector<user> last_synced_users = load_users_from_stream(inf_sync_record);
     for (user & u : last_synced_users) {
         abook_id_map_from_last_sync_[u.custom5] = u;
     }
+    cout << "Loaded." << endl;
 }
 
 void sync::load_google() {
+    cout << "Loading contacts from google... ";
     contacts cs(o2_);
     vector<user> google_users = cs.get_all();
     for (user & u : google_users) {
         google_id_map_[u.get_id("google")] = u;
     }
+    cout << "Loaded." << endl;
 }
 
 void sync::abook_to_google() {
+    cout << "Sync abook --> google..." << endl;
     contacts cs(o2_);
     //let's find out deleted
+    cout << "Deleting deleted..." << endl;
     for (auto & it : abook_id_map_from_last_sync_) {
         if (abook_id_map_.find(it.first) == abook_id_map_.end()) {
             try {
@@ -77,7 +87,10 @@ void sync::abook_to_google() {
             }
         }
     }
+    cout << "Done." << endl;
+
     //let's find out new
+    cout << "Adding new..." << endl;
     for (auto & it : abook_id_map_) {
         if (abook_id_map_from_last_sync_.find(it.first) == abook_id_map_from_last_sync_.end()) {
             try {
@@ -92,7 +105,10 @@ void sync::abook_to_google() {
             }
         }
     }
+    cout << "Done." << endl;
+
     //let's find out updated
+    cout << "Updating updated..." << endl;
     for (auto & it : abook_id_map_) {
         //if existed in last sync
         if (abook_id_map_from_last_sync_.find(it.first) != abook_id_map_from_last_sync_.end()) {
@@ -109,11 +125,15 @@ void sync::abook_to_google() {
             }
         }
     }
+    cout << "Done." << endl;
 }
 
 void sync::google_to_abook() {
+    cout << "Sync abook <-- google..." << endl;
     contacts cs(o2_);
+
     //let's find out deleted
+    cout << "Deleting deleted..." << endl;
     for (auto & it : google_abook_id_map_) {
         //there is deleted
         if (google_id_map_.find(it.first) == google_id_map_.end()) {
@@ -125,6 +145,8 @@ void sync::google_to_abook() {
             }
         }
     }
+
+    cout << "Processing google contacts..." << endl;
     for (auto & it : google_id_map_) {
         //this is new contact from google
         if (google_abook_id_map_.find(it.second.get_id("google")) == google_abook_id_map_.end()) {
@@ -145,20 +167,30 @@ void sync::google_to_abook() {
             }
         }
     }
+    cout << "Done." << endl;
 }
 
 void sync::wrap_it_up() {
+    cout << "Updating files..." << endl;
+
+    cout << "Saving new abook addressbook... ";
     vector<user> abook_users;
     for (auto & it : abook_id_map_) {
         abook_users.push_back(it.second);
     }
     ofstream abook_data_file(abook_data_file_);
     abook_data_file << abook_users;
+    cout << "Done." << endl;
+
+    cout << "Saving sync record... ";
     ofstream gbook_sync_record_file(gbook_sync_record_);
     gbook_sync_record_file << abook_users;
+    cout << "Done." << endl;
 
+    cout << "Saving abook <--> google mapping... ";
     ofstream gbook_id_file(gbook_id_file_);
     for (auto & it : abook_google_id_map_) {
         gbook_id_file << it.first << " " << it.second << endl;
     }
+    cout << "Done." << endl;
 }
