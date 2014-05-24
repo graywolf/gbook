@@ -60,7 +60,7 @@ custom3=c3\n\
 custom4=c4\n\
 custom5=c5\n\
 email=tt@example.com,tt2@example.com\n\
-groups=a,b\n", ss.str());
+groups=a,b\n\n", ss.str());
     us.push_back(u);
     ss.str("");
     ss << us;
@@ -86,7 +86,7 @@ custom3=c3\n\
 custom4=c4\n\
 custom5=c5\n\
 email=tt@example.com,tt2@example.com\n\
-groups=a,b\n\
+groups=a,b\n\n\
 [1]\n\
 name=Test Tester\n\
 address=Patkova 3\n\
@@ -109,5 +109,5 @@ custom3=c3\n\
 custom4=c4\n\
 custom5=c5\n\
 email=tt@example.com,tt2@example.com\n\
-groups=a,b\n", ss.str());
+groups=a,b\n\n", ss.str());
 }

@@ -8,8 +8,9 @@ PROJECT(
 
 SET(
     CMAKE_CXX_FLAGS
-        "${CMAKE_CXX_FLAGS} -g -fno-rtti -Wall -std=c++11"
+        "-fno-rtti -Wall -std=c++11"
 )
+
 SET(
     PROJECT_FILES
         lib/tinyxml2/tinyxml2.cpp
@@ -61,19 +62,24 @@ TARGET_LINK_LIBRARIES(
     ${LIBCONFIGPP_LIBRARIES}
 )
 
-#ADD_EXECUTABLE(
-#    test_it
-#        test/gtest.cpp
-#        ${PROJECT_FILES}
-#)
+FIND_LIBRARY(
+    GTEST_LIBRARY
+        gtest libs/gtest-1.7.0/lib/.libs
+)
 
-#TARGET_LINK_LIBRARIES(
-#    test_it
-#
-#    gtest
-#    ${CURL_LIBRARY}
-#    ${JSONCPP_LIBRARIES}
-#)
+ADD_EXECUTABLE(
+    test_it
+        test/gtest.cpp
+        ${PROJECT_FILES}
+)
+
+TARGET_LINK_LIBRARIES(
+    test_it
+
+    ${GTEST_LIBRARY}
+    ${CURL_LIBRARY}
+    ${JSONCPP_LIBRARIES}
+)
 
 #ADD_EXECUTABLE(
 #    test_google_stuff
