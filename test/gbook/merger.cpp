@@ -1,6 +1,8 @@
 using namespace std;
 using namespace gbook;
 
+#include "merger.h"
+
 namespace gbook {
     class contactsMock {
     public:
