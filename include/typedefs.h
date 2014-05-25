@@ -5,16 +5,21 @@
 #include <map>
 
 #include "user.h"
-#include "storage_manager.h"
 
 namespace gbook {
     typedef std::vector<user>           user_list;
-    typedef std::map<std::string, user> user_map;
+    typedef std::vector<user *>         user_ptr_list;
 
+    struct storage_changes;
+}
+
+#include "storage_manager.h"
+
+namespace gbook {
     struct storage_changes {
-        user_list new_users;
-        user_map modified_users;
-        user_map deleted_users;
+        user_ptr_list new_users;
+        user_ptr_list modified_users;
+        user_list deleted_users;
 
         storage_manager * manager;
     };
