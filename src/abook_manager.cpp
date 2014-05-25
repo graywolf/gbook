@@ -9,7 +9,6 @@ void abook_manager::load(std::istream & current_stream) {
     current_ = load_users_from_stream(current_stream);
 }
 
-
 void abook_manager::flush(ostream stream) const {
     stream << current_;
 }
@@ -48,7 +47,7 @@ void abook_manager::remove(std::string id) {
     current_.erase(begin(current_) + i);
 }
 
-void abook_manager::fill_storage_changes(storage_changes & changes, const user_list & last_sync) {
+void abook_manager::fill_storage_changes(storage_changes & changes, user_list & last_sync) {
     changes.new_users.clear();
     for (size_t i = 0; i < current_.size(); ++i) {
         if (current_.at(i).custom5.empty()) {
@@ -62,7 +61,7 @@ void abook_manager::fill_storage_changes(storage_changes & changes, const user_l
         int current_id = find_user_id_by_custom5(last_sync.at(i).custom5);
         if (current_id == -1) {
             changes.deleted_users.push_back(last_sync.at(i));
-        } else if (last_sync.at(i) != current_id.at(current_id)) {
+        } else if (last_sync.at(i) != current_.at(current_id)) {
             changes.modified_users.push_back(&current_.at(current_id));
         }
     }

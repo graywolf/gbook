@@ -20,6 +20,7 @@ SET(
         src/curl.cpp
         src/sync.cpp
         src/abook_manager.cpp
+        src/google_manager.cpp
 )
 SET(
     CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake
