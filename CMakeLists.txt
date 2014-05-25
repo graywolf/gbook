@@ -45,6 +45,8 @@ CMAKE_MINIMUM_REQUIRED(
 INCLUDE_DIRECTORIES(
     ${CMAKE_CURRENT_BINARY_DIR}
     lib
+    lib/gtest-1.7.0/include
+    lib/gmock-1.7.0/include
     include
 )
 
@@ -68,7 +70,7 @@ FIND_LIBRARY(
 )
 FIND_LIBRARY(
     GMOCK_LIBRARY
-        gtest lib/gmock-1.7.0/lib/.libs
+        gmock lib/gmock-1.7.0/lib/.libs
 )
 
 ADD_EXECUTABLE(

@@ -38,7 +38,7 @@ custom3=c3\n\
 custom4=c4\n\
 custom5=c5");
     vector<user> users = load_users_from_stream(ss);
-    ASSERT_EQ(1, users.size());
+    ASSERT_EQ((size_t) 1, users.size());
     ASSERT_EQ("Test Tester", users[0].name);
     ASSERT_EQ("Patkova 3", users[0].address);
     ASSERT_EQ("room 918", users[0].address2);
@@ -60,10 +60,10 @@ custom5=c5");
     ASSERT_EQ("c4", users[0].custom4);
     ASSERT_EQ("c5", users[0].custom5);
 
-    ASSERT_EQ(2, users[0].emails.size());
+    ASSERT_EQ((size_t) 2, users[0].emails.size());
     ASSERT_EQ("tt@example.com", users[0].emails[0]);
     ASSERT_EQ("tt2@example.com", users[0].emails[1]);
-    ASSERT_EQ(2, users[0].groups.size());
+    ASSERT_EQ((size_t) 2, users[0].groups.size());
     ASSERT_EQ("a", users[0].groups[0]);
     ASSERT_EQ("b", users[0].groups[1]);
 }
@@ -84,7 +84,7 @@ name=t1\n\
 [2]\n\
 name=t2");
     vector<user> users = load_users_from_stream(ss);
-    ASSERT_EQ(3, users.size());
+    ASSERT_EQ((size_t) 3, users.size());
     ASSERT_EQ("t0", users[0].name);
     ASSERT_EQ("t1", users[1].name);
     ASSERT_EQ("t2", users[2].name);
