@@ -12,11 +12,11 @@ namespace gbook {
     class merger {
     public:
         storage_changes & primary() {
-            return primary;
+            return primary_;
         }
 
     private:
-        storage_changes primary;
+        storage_changes primary_;
         vector<storage_changes> secondaries;
     };
 }

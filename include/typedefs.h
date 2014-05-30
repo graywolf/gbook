@@ -5,10 +5,13 @@
 #include <map>
 
 #include "user.h"
+#include "logger.h"
 
 namespace gbook {
     typedef std::vector<user>           user_list;
     typedef std::vector<user *>         user_ptr_list;
+
+    typedef jstation::severity severity;
 
     struct storage_changes;
 }

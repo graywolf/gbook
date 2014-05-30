@@ -14,6 +14,7 @@ SET(
 SET(
     PROJECT_FILES
         lib/tinyxml2/tinyxml2.cpp
+        lib/cfg_parser/cfg_parser.cpp
         src/user_reader.cpp
         src/user_writer.cpp
         src/contacts.cpp
