@@ -91,7 +91,6 @@ int main(int argc, char **argv) {
         }
 
         gbook::config::get(config_file);
-        return 0;
 
         switch (command) {
             case commands::manage:
@@ -101,10 +100,7 @@ int main(int argc, char **argv) {
                 break;
             case commands::sync:
                 LOG_INFO("Starting sync")
-                string abook_dir = getenv("HOME");
-                abook_dir.append("/.abook");
-                LOG_DEBUG("Abook directory determined as: " << abook_dir)
-                //gbook::sync s(abook_dir);
+                //gbook::sync s;
                 //s.do_sync();
                 LOG_INFO("Sync finished.")
                 break;

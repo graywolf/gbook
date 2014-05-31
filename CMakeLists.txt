@@ -13,15 +13,16 @@ SET(
 
 SET(
     PROJECT_FILES
-        lib/tinyxml2/tinyxml2.cpp
         lib/cfg_parser/cfg_parser.cpp
+        lib/tinyxml2/tinyxml2.cpp
+        src/abook_manager.cpp
+        src/contacts.cpp
+        src/config.cpp
+        src/curl.cpp
+        src/google_manager.cpp
+        src/sync.cpp
         src/user_reader.cpp
         src/user_writer.cpp
-        src/contacts.cpp
-        src/curl.cpp
-        src/sync.cpp
-        src/abook_manager.cpp
-        src/google_manager.cpp
 )
 SET(
     CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake
