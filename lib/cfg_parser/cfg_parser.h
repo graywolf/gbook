@@ -10,23 +10,44 @@
 #ifndef _CFG_PARSER_H
 #define _CFG_PARSER_H
 
-#ifdef HAVE_CONFIG_H
-#include "config.h"
-#endif
-
-#define HAVE_SSTREAM
-
 #include <list>
 #include <string>
 #include <vector>
 
-#ifdef HAVE_SSTREAM
 #include <sstream>
-#endif
 
 #define CFG_MAXLENGTH 128
 
+#include <exception>
+class ParseException : public std::exception {
+public:
+    ParseException(std::string file, int line, std::string format)
+        : file_(file), format_(format), line_(line) {}
+    virtual const char * what() const throw() {
+        return
+            std::string("ConfigParser:")
+            .append(file_)
+            .append(":")
+            .append(std::to_string(line_))
+            .append(": Invalid format: ")
+            .append(format_)
+            .append(". Valid format is 'keyword = value' or 'keyword value")
+            .c_str();
+    }
+private:
+    std::string file_, format_;
+    int line_;
+};
 
+class IOException : public std::exception {
+public:
+    IOException(std::string file) : file_(file) {}
+    virtual const char * what() const throw() {
+        return std::string("Cannot access file ").append(file_).c_str();
+    }
+private:
+    std::string file_;
+};
 
 class ConfigParser {
 public:
@@ -52,7 +73,6 @@ public:
     // deletes variable from configuration
     void delVar(const std::string& keyword, const std::string& section = "");
 
-#ifdef HAVE_SSTREAM
     // returns value converted to type T if found, default_value else
     // Remark: does NOT work with char*. Use std::string or getCString() instead
     template <typename T> T get(const std::string& keyword, const T& default_value, const std::string& section = "") {
@@ -73,12 +93,10 @@ public:
         if(!(o << value)) setVar(keyword, "", section);
         else setVar(keyword, o.str(), section);
     }
-#endif
 
     // returns const char* if found c_str() of supplied default_value else. Remark that char* is only valid as long as keyword exists!
     const char* getCString(const std::string& keyword, const char* default_value = NULL, const std::string& section = "");
 
-#ifndef HAVE_SSTREAM
     // returns string if found, supplied default_value else
     std::string getString(const std::string& keyword, const std::string& default_value = "", const std::string& section = "");
     // returns integer if found, supplied default_value else
@@ -100,7 +118,6 @@ public:
     void setDouble(const std::string& keyword, double value, const std::string& section = "");
     // sets string value of keyword
     void setString(const std::string& keyword, const std::string& value, const std::string& section = "");
-#endif
 
     // adds a section to the configuration (if it does not yet exist)
     void addSection(const std::string& section, const std::string& comment = "");

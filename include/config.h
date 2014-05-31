@@ -8,18 +8,15 @@
 namespace gbook {
     class config {
     public:
-        static config & get(std::string path = "") {
-            static config instance(path);
-            return instance;
+        static ConfigParser & get(std::string config_file = "") {
+            static config instance(config_file);
+            return instance.cfg_;
         }
     private:
         config(std::string config_file) {
-            std::string config_file;
-            if (path.empty()) {
+            if (config_file.empty()) {
                 config_file = getenv("HOME");
                 config_file.append("/.config/gbook/config");
-            } else {
-                config_file = path;
             }
             config_file_ = config_file;
 
@@ -27,19 +24,12 @@ namespace gbook {
                 LOG_DEBUG("Reading config file " << config_file_);
                 cfg_.readFile(config_file_);
                 LOG_DEBUG3("Config file loaded and parsed.");
-            } catch (libconfig::FileIOException fioe) {
-                throw std::invalid_argument(
-                    std::string("Config file '")
-                        .append(config_file_)
-                        .append("' cannot be open.")
-                );
-            } catch (libconfig::ParseException pe) {
-                throw std::invalid_argument(
-                    std::string("Config file cannot be parsed, error ")
-                        .append(std::to_string(pe.getLine()))
-                        .append(":")
-                        .append(pe.getError())
-                );
+            } catch (IOException & ioe) {
+                LOG_ERROR("Cannot read config file: " << ioe.what());
+                throw ioe;
+            } catch (ParseException & pe) {
+                LOG_ERROR("Cannot parse config file: " << pe.what());
+                throw pe;
             }
         }
         ~config() {
@@ -47,19 +37,12 @@ namespace gbook {
                 LOG_DEBUG("Saving config.");
                 cfg_.writeFile(config_file_.c_str());
                 LOG_DEBUG3("Config saved.");
-            } catch (libconfig::FileIOException fioe) {
-                throw std::invalid_argument(
-                    std::string("Config file '")
-                        .append(config_file_)
-                        .append("' cannot be open.")
-                );
-            } catch (libconfig::ParseException pe) {
-                throw std::invalid_argument(
-                    std::string("Config file cannot be parsed, error ")
-                        .append(std::to_string(pe.getLine()))
-                        .append(":")
-                        .append(pe.getError())
-                );
+            } catch (IOException & ioe) {
+                LOG_ERROR("Cannot read config file: " << ioe.what());
+                throw ioe;
+            } catch (ParseException & pe) {
+                LOG_ERROR("Cannot parse config file: " << pe.what());
+                throw pe;
             }
         }
         std::string config_file_;

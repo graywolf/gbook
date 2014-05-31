@@ -13,15 +13,6 @@
 
 #define DEBUG
 
-#ifdef DEBUG
-    #include <stdio.h>
-    #define ErrorMessage(x...) printf(x)
-    #define DebugMessage(x...) printf(x)
-#else
-    #define ErrorMessage(x)
-#endif
-
-
 using namespace std;
 
 ConfigParser::ConfigParser(const std::string& in_file) {
@@ -41,14 +32,13 @@ int ConfigParser::readFile(const std::string& in_file) {
     unsigned int linenumber = 0;
     vector<string> tokens;
     string keyword, value, comment, section;
-    unsigned int pos;
+    size_t pos;
     int state = SL_NORMAL;
     string tmp;
 
     fd = fopen(in_file.c_str(), "rt");
     if(!fd) {
-        ErrorMessage("ConfigParser: Could not open %s\n", filename.c_str());
-        return 0;
+        throw IOException(in_file);
     }
 
     while(!feof(fd)) {
@@ -110,10 +100,7 @@ int ConfigParser::readFile(const std::string& in_file) {
                 break;
             default:
                 // error
-                ErrorMessage("ConfigParser:%s:%d: Invalid format: %s\nValid format is 'keyword = value' or 'keyword value'\n", in_file.c_str(), linenumber, tmp.c_str());
-                //ErrorMessage("Tokens read: ");
-                //for(unsigned int i = 0; i < tokens.size(); i++) ErrorMessage("%s, ", tokens[i].c_str());
-                //ErrorMessage("\n");
+                throw ParseException(in_file, linenumber, tmp);
                 break;
         }
 
@@ -142,8 +129,7 @@ int ConfigParser::writeFile(const std::string& out_file) {
 
     fd = fopen(file_name.c_str(), "wt");
     if(!fd) {
-        ErrorMessage("ConfigParser: Could not open %s for writing\n", file_name.c_str());
-        return 0;
+        throw IOException(file_name);
     }
 
     while(section != sections.end()) {
@@ -244,7 +230,6 @@ const char* ConfigParser::getCString(const std::string& keyword, const char* def
     return default_value;
 }
 
-#ifndef HAVE_SSTREAM
 std::string ConfigParser::getString(const std::string& keyword, const std::string& default_value, const std::string& section) {
     string value = default_value;
     getVar(keyword, value, section);
@@ -304,7 +289,6 @@ void ConfigParser::setDouble(const std::string& keyword, double value, const std
 void ConfigParser::setString(const std::string& keyword, const std::string& value, const std::string& section) {
     setVar(keyword, value, section);
 }
-#endif // HAVE_SSTREAM
 
 
 void ConfigParser::addSection(const std::string& section, const std::string& comment) {

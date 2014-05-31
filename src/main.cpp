@@ -4,12 +4,11 @@
 #include <argp.h>
 #include <stdexcept>
 
-#include "../include/config.h"
-
 #include "sync.h"
 #include "typedefs.h"
 #include "logger.h"
 #include "macros.h"
+#include "config.h"
 
 using namespace std;
 
@@ -19,6 +18,7 @@ commands command;
 bool verbose = false;
 bool debug = false;
 bool quiet = false;
+string config_file;
 
 static int parse_opt(int key, char * arg, argp_state * state) {
     switch (key) {
@@ -37,6 +37,9 @@ static int parse_opt(int key, char * arg, argp_state * state) {
         case 'q':
             quiet = true;
             break;
+        case 'c':
+            config_file = string(arg);
+            break;
         default:
             return ARGP_ERR_UNKNOWN;
             break;
@@ -49,6 +52,7 @@ argp_option options[] = {
     {"synchronize", 's', 0, 0, "Synchronize contacts. Default if none command specified."},
     {"manage", 'm', 0, 0, "Manage contacts using abook"},
     {0, 0, 0, 0, "Options"},
+    {"config-file", 'c', "CONFIG-FILE", 0, "Where is config file? Default: ~/.config/gbook"},
     {"verbose", 'v', 0, 0, "Enable some debug information"},
     {"debug", 'd', 0, 0, "Enable all debug information"},
     {"quiet", 'q', 0, 0, "Run quiet. Has priority over v & d."},
@@ -59,51 +63,56 @@ const char *argp_program_version = MAJOR_VERSION "." MINOR_VERSION "." REVISION;
 const char *argp_program_bug_address = "<paladin@jstation.cz>";
 
 int main(int argc, char **argv) {
-    ios_base::sync_with_stdio(false);
-    locale loc ("");
-    locale::global (loc);
+    try {
+        ios_base::sync_with_stdio(false);
+        locale loc ("");
+        locale::global (loc);
 
-    jstation::logger * cout_logger = new jstation::cout_logger();
-    cout_logger->set_threshold(jstation::severity::INFO);
-    jstation::logger_collection::instance().add_logger(cout_logger);
+        jstation::logger * cout_logger = new jstation::cout_logger();
+        cout_logger->set_threshold(jstation::severity::INFO);
+        jstation::logger_collection::instance().add_logger(cout_logger);
 
-    command = commands::sync;
+        config_file = getenv("HOME");
+        config_file.append("/.config/gbook");
 
-    argp argp = { options, parse_opt, 0, "Synchronization tool between google contacts & abook data file."};
-    argp_parse(&argp, argc, argv, 0, 0, 0);
+        command = commands::sync;
 
-    if (verbose) {
-        cout_logger->set_threshold(jstation::severity::DEBUG);
-    }
-    if (debug) {
-        cout_logger->set_threshold(jstation::severity::DEBUG3);
-    }
-    if (quiet) {
-        cout_logger->set_threshold(jstation::severity::ERROR);
-    }
+        argp argp = { options, parse_opt, 0, "Synchronization tool between google contacts & abook data file."};
+        argp_parse(&argp, argc, argv, 0, 0, 0);
 
-    switch (command) {
-        case commands::manage:
-            LOG_INFO("Starting abook...")
-            system("abook");
-            LOG_INFO("Abook finished.")
-            break;
-        case commands::sync:
-            try {
+        if (verbose) {
+            cout_logger->set_threshold(jstation::severity::DEBUG);
+        }
+        if (debug) {
+            cout_logger->set_threshold(jstation::severity::DEBUG3);
+        }
+        if (quiet) {
+            cout_logger->set_threshold(jstation::severity::ERROR);
+        }
+
+        gbook::config::get(config_file);
+        return 0;
+
+        switch (command) {
+            case commands::manage:
+                LOG_INFO("Starting abook...")
+                system("abook");
+                LOG_INFO("Abook finished.")
+                break;
+            case commands::sync:
                 LOG_INFO("Starting sync")
                 string abook_dir = getenv("HOME");
                 abook_dir.append("/.abook");
                 LOG_DEBUG("Abook directory determined as: " << abook_dir)
-                gbook::sync s(abook_dir);
-                s.do_sync();
+                //gbook::sync s(abook_dir);
+                //s.do_sync();
                 LOG_INFO("Sync finished.")
-            } catch (runtime_error re) {
-                LOG_ERROR(re.what());
-            } catch (invalid_argument re) {
-                LOG_ERROR(re.what());
-            }
-            break;
+                break;
+        }
+    } catch (exception & e) {
+        LOG_ERROR(e.what());
     }
+
 
     return EXIT_SUCCESS;
 }
