@@ -100,8 +100,7 @@ int main(int argc, char **argv) {
                 break;
             case commands::sync:
                 LOG_INFO("Starting sync")
-                gbook::sync s;
-                //s.do_sync();
+                (gbook::sync()).do_sync();
                 LOG_INFO("Sync finished.")
                 break;
         }

@@ -10,14 +10,50 @@
 
 namespace gbook {
     class merger {
+    private:
+        struct manager_record {
+            storage_manager * manager_;
+            bool owner_;
+            storage_changes changes_;
+        };
     public:
-        storage_changes & primary() {
-            return primary_;
+        /**
+         * Sets primary manager
+         *
+         * \param storage_manager * manager storage manager
+         * \param bool owner is merger owner of the manager?
+         **/
+        void set_primary(storage_manager * manager, bool owner = true) {
+            primary.manager_ = manager;
+            primary.owner_ = owner;
+        }
+
+        /**
+         * Adds secondary manager
+         *
+         * \param storage_manager * manager storage manager
+         * \param bool owner is merger owner of the manager?
+         **/
+        void add_secondary(storage_manager * manager, bool owner = true) {
+            manager_record mr;
+            mr.manager_ = manager;
+            mr.owner_ = owner;
+            secondaries.push_back(mr);
+        }
+
+        /**
+         * Set's state after last sync.
+         *
+         * \param user_list last_state state after last sync
+         **/
+        void set_last_state(user_list last_state) {
+            last_state_ = last_state;
         }
 
     private:
-        storage_changes primary_;
-        vector<storage_changes> secondaries;
+        user_list last_state_;
+        manager_record primary;
+        std::vector<manager_record> secondaries;
     };
 }
 

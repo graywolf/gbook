@@ -11,7 +11,11 @@
 using namespace std;
 using namespace gbook;
 
-sync::sync() {
+void sync::do_sync() {
+    ensure_token();
+}
+
+void sync::ensure_token() {
     if (config::get().access_token().empty()) {
         LOG_DEBUG("Access token is empty, contacting server...");
         string verification_url, user_code;
@@ -27,7 +31,4 @@ sync::sync() {
         LOG_DEBUG("Refreshing access token.");
         o2_.refresh_access_token();
     }
-}
-
-void sync::do_sync() {
 }

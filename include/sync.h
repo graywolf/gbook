@@ -8,6 +8,7 @@
 
 #include "user.h"
 #include "oauth2.h"
+#include "merger.h"
 
 namespace gbook {
     /**
@@ -16,16 +17,19 @@ namespace gbook {
     class sync {
     public:
         /**
-         * Constructs sync instance and assure we have access token. Either authenticates user
-         * or refreshes access token.
-         **/
-        sync();
-        /**
          * Do the whole sync.
          **/
         void do_sync();
     private:
+        void ensure_token();
+
+        void load_managers();
+        void load_last_state();
+        void load_abook();
+        void load_google();
+
         oauth2 o2_;
+        merger m_;
     };
 }
 

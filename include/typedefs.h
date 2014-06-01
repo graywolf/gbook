@@ -13,18 +13,10 @@ namespace gbook {
 
     typedef jstation::severity severity;
 
-    struct storage_changes;
-}
-
-#include "storage_manager.h"
-
-namespace gbook {
     struct storage_changes {
         user_ptr_list new_users;
         user_ptr_list modified_users;
         user_list deleted_users;
-
-        storage_manager * manager;
     };
 }
 
