@@ -1,3 +1,5 @@
+#include <stdexcept>
+
 #include "config.h"
 
 using namespace gbook;
@@ -55,4 +57,22 @@ string config::abook_file() {
         f = expanded_f;
     }
     return f;
+}
+
+string config::client_id() {
+    string cid = get().cfg_.get("client_id", string(), "oauth2");
+    if (cid.empty()) {
+        LOG_ERROR("oauth2.client_id is empty, this should not be");
+        throw runtime_error("oauth2.client_id is empty, this should not be");
+    }
+    return cid;
+}
+
+string config::client_secret() {
+    string csec = get().cfg_.get("client_secret", string(), "oauth2");
+    if (csec.empty()) {
+        LOG_ERROR("oauth2.client_secret is empty, this should not be");
+        throw runtime_error("oauth2.client_secret is empty, this should not be");
+    }
+    return csec;
 }

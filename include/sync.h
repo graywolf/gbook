@@ -19,7 +19,7 @@ namespace gbook {
          * Constructs sync instance and assure we have access token. Either authenticates user
          * or refreshes access token.
          **/
-        sync(std::string abook_folder);
+        sync();
         /**
          * Do the whole sync.
          **/

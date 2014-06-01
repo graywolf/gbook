@@ -11,14 +11,15 @@
 using namespace std;
 using namespace gbook;
 
-sync::sync(string abook_folder) {
+sync::sync() {
     if (config::get().access_token().empty()) {
         LOG_DEBUG("Access token is empty, contacting server...");
-        user_data ud = o2_.request_user_code();
-        cout    << "To continue please go to "
-                << ud.verification_url << endl;
-                << "And enter the following code when prompted to: "
-                << ud.user_code
+        string verification_url, user_code;
+        o2_.request_user_code(verification_url, user_code);
+        cout    << "To continue please go to:\n    "
+                << verification_url
+                << "\nand enter the following code when prompted to:\n    "
+                << user_code
                 << endl;
         o2_.begin_polling();
         cout << "Ok, we've got access token." << endl;
