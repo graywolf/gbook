@@ -17,6 +17,7 @@ enum class commands { sync = 's', manage = 'm' };
 commands command;
 bool verbose = false;
 bool debug = false;
+bool ultra_debug = false;
 bool quiet = false;
 string config_file;
 
@@ -33,6 +34,9 @@ static int parse_opt(int key, char * arg, argp_state * state) {
             break;
         case 'd':
             debug = true;
+            break;
+        case 'D':
+            ultra_debug = true;
             break;
         case 'q':
             quiet = true;
@@ -54,7 +58,8 @@ argp_option options[] = {
     {0, 0, 0, 0, "Options"},
     {"config-file", 'c', "CONFIG-FILE", 0, "Where is config file? Default: ~/.config/gbook"},
     {"verbose", 'v', 0, 0, "Enable some debug information"},
-    {"debug", 'd', 0, 0, "Enable all debug information"},
+    {"debug", 'd', 0, 0, "Enable more debug information"},
+    {"Debug", 'D', 0, 0, "Enable all debug information"},
     {"quiet", 'q', 0, 0, "Run quiet. Has priority over v & d."},
     {0}
 };
@@ -84,6 +89,9 @@ int main(int argc, char **argv) {
             cout_logger->set_threshold(jstation::severity::DEBUG);
         }
         if (debug) {
+            cout_logger->set_threshold(jstation::severity::DEBUG2);
+        }
+        if (ultra_debug) {
             cout_logger->set_threshold(jstation::severity::DEBUG3);
         }
         if (quiet) {

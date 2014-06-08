@@ -1,5 +1,6 @@
 #include "contacts.h"
 #include "user.h"
+#include "macros.h"
 
 #include "user_writer.h"
 
@@ -7,21 +8,65 @@ using namespace std;
 using namespace gbook;
 using namespace tinyxml2;
 
-vector<user> gbook::contacts::get_all() {
+contacts::contacts() {
+    // here we need to fetch id of "my contacts" contacts group - this is necessary, because
+    // we do not want contacts from auto groups like "Most Contacted" etc.
+    curl c;
+    prepare_curl(c);
+    c.url("https://www.google.com/m8/feeds/groups/default/full");
+    c.method(method::GET);
+    LOG_DEBUG2("Fetching 'my constacts' group id.");
+    c.execute();
+    LOG_DEBUG2("Got response.")
+    LOG_DEBUG3(c.received_body())
+
+    tinyxml2::XMLDocument d;
+    d.Parse(c.received_body().c_str());
+    if (d.Error()) {
+        LOG_ERROR("Cannot parse groups:\n" << c.received_body());
+        throw std::runtime_error(std::string("Cannot parse groups xml: ").append(c.received_body()));
+    }
+    tinyxml2::XMLElement * feed = d.FirstChildElement("feed");
+    if (!feed) {
+        LOG_ERROR("Cannot find feed element:\n" << c.received_body());
+        throw std::runtime_error(std::string("Cannot find feed element: ").append(c.received_body()));
+    }
+    for (tinyxml2::XMLElement * entry = feed->FirstChildElement("entry"); entry != NULL; entry = entry->NextSiblingElement("entry")) {
+        tinyxml2::XMLElement * system_group = entry->FirstChildElement("gContact:systemGroup");
+        if (system_group != NULL && system_group->Attribute("id", "Contacts")) {
+            tinyxml2::XMLElement * id = entry->FirstChildElement("id");
+            if (id) {
+                my_contacts_group_id_ = id->GetText();
+            }
+        }
+    }
+    if (my_contacts_group_id_.empty()) {
+        LOG_ERROR("Cannot find 'my contacts' group in:\n" << c.received_body());
+        throw std::runtime_error(std::string("Cannot find my contacts group: ").append(c.received_body()));
+    }
+    LOG_DEBUG2("'my contacts' group id: " << my_contacts_group_id_);
+}
+
+vector<user> contacts::get_all() {
+    LOG_DEBUG2("Getting all contacts.");
     vector<user> users;
     string url = "https://www.google.com/m8/feeds/contacts/default/full?group=";
-    url.append(my_contacts_group_id);
+    url.append(my_contacts_group_id_);
     do {
+        LOG_DEBUG2("Processing url " << url)
         curl c;
         prepare_curl(c);
         c.url(url);
         c.method(method::GET);
         c.execute();
+        LOG_DEBUG2("Got response.")
+        LOG_DEBUG3(c.received_body())
 
         XMLDocument d;
         d.Parse(c.received_body().c_str());
         XMLElement * feed = d.FirstChildElement("feed");
         if (!feed) {
+            LOG_ERROR("Cannot find feed element:\n" << c.received_body());
             throw runtime_error(string("No feed element: ").append(c.received_body()));
         }
         for (XMLElement * entry = feed->FirstChildElement("entry"); entry != NULL; entry = entry->NextSiblingElement("entry")) {
@@ -38,10 +83,12 @@ vector<user> gbook::contacts::get_all() {
             }
         }
     } while (!url.empty());
+    LOG_DEBUG2("Got all users")
     return users;
 }
 
 void contacts::add(user & u) {
+    LOG_DEBUG2("Adding user.")
     XMLDocument d;
     XMLElement * root = d.NewElement("x");
     d.InsertEndChild(root);
@@ -57,21 +104,27 @@ void contacts::add(user & u) {
     c.set_body(requestBody);
     c.header("Content-Type", "application/atom+xml");
     c.execute();
+    LOG_DEBUG2("Got response.")
+    LOG_DEBUG3(c.received_body())
     if (c.return_code() != 201) {
+        LOG_ERROR("Cannot create contact.\n" << c.received_body())
         throw runtime_error(string("Cannot create contact: ").append(c.received_body()));
     }
 
     XMLDocument response;
     response.Parse(c.received_body().c_str());
     if (response.Error()) {
+        LOG_ERROR("Cannot parse xml document.\n" << c.received_body())
         throw invalid_argument(string("Cannot parse xml document: ").append(c.received_body()));
     }
     user returned_user;
     map_entry_to_user(response.FirstChildElement("entry"), returned_user);
     u.set_id("google", returned_user.get_id("google"));
+    LOG_DEBUG2("User added into google, id: " << u.get_id("google"))
 }
 
 void contacts::update(user u) {
+    LOG_DEBUG2("Updating user.")
     XMLDocument d;
     XMLElement * root = d.NewElement("x");
     d.InsertEndChild(root);
@@ -88,21 +141,29 @@ void contacts::update(user u) {
     c.header("Content-Type", "application/atom+xml");
     c.header("If-Match", "*");
     c.execute();
+    LOG_DEBUG2("Got response.")
+    LOG_DEBUG3(c.received_body())
     if (c.return_code() != 200) {
+        LOG_ERROR("Cannot update contact.\n" << c.received_body())
         throw runtime_error(string("Cannot update contact: ").append(c.received_body()));
     }
+    LOG_DEBUG2("User updated.")
 }
 
 void contacts::remove(string id) {
+    LOG_DEBUG2("Removing user.")
     curl c;
     prepare_curl(c);
     c.url(string("https://www.google.com/m8/feeds/contacts/default/full/").append(id));
     c.method(method::DELETE);
     c.header("If-Match", "*");
     c.execute();
+    LOG_DEBUG2("Got response.")
+    LOG_DEBUG3(c.received_body())
     if (c.return_code() != 200) {
         throw runtime_error(string("Cannot delete contact: ").append(c.received_body()));
     }
+    LOG_DEBUG2("User removed.")
 }
 
 
@@ -114,7 +175,7 @@ string safe_assign_string(const char * str) {
     }
 }
 
-void contacts::map_entry_to_user(XMLElement* entry, gbook::user& u) {
+void contacts::map_entry_to_user(XMLElement* entry, user& u) {
     if (entry->FirstChildElement("gd:name")) {
         u.name = safe_assign_string(entry->FirstChildElement("gd:name")->FirstChildElement("gd:fullName")->GetText());
     }
@@ -225,7 +286,7 @@ void contacts::map_user_to_entry(user& u, XMLElement* entry, XMLDocument & d) {
     entry->SetAttribute("xmlns:gd", "http://schemas.google.com/g/2005");
     entry->SetAttribute("xmlns:gContact", "http://schemas.google.com/contact/2008");
     add_xml_element(d, entry, "atom:category", { {"scheme", "http://schemas.google.com/g/2005#kind"}, {"term", "http://schemas.google.com/contact/2008#contact"} });
-    add_xml_element(d, entry, "gContact:groupMembershipInfo", { {"href", my_contacts_group_id} });
+    add_xml_element(d, entry, "gContact:groupMembershipInfo", { {"href", my_contacts_group_id_} });
 
     if (!u.name.empty()) {
         add_xml_element(d, add_xml_element(d, entry, "gd:name"), "gd:fullName", u.name);

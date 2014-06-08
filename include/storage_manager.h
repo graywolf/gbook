@@ -13,6 +13,7 @@ namespace gbook {
      * Base class for contact managers.
      **/
     class storage_manager {
+    public:
         /**
          * Adds new user into system managed by this manager. Can throw error
          * if user with id already exists, but manager has no obligation to
@@ -42,7 +43,7 @@ namespace gbook {
          * \param storage_changes & changes Structure to fill
          * \param const user_list & last_sync State after last sync
          **/
-        virtual void fill_storage_changes(storage_changes & changes, const user_list & last_sync) const =0;
+        virtual void fill_storage_changes(storage_changes & changes, user_list & last_sync) =0;
     };
 }
 

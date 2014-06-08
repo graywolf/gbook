@@ -79,6 +79,20 @@ namespace gbook {
         static void refresh_token(std::string new_token) {
             get().cfg_.set("refresh_token", new_token, "oauth2");
         }
+
+        /**
+         * Data dir.
+         *
+         * \return std::string
+         **/
+         static std::string data_dir();
+
+        /**
+         * Last state file.
+         *
+         * \return std::string
+         **/
+         static std::string last_state_file();
     private:
         config(std::string config_file);
         ~config();

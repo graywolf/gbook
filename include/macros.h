@@ -43,9 +43,9 @@
     static_cast<std::ostringstream&>(           \
       std::ostringstream().flush() << MESSAGE   \
     ).str(),                                    \
-    "",                                         \
-    "",                                         \
-     0                                          \
+    __FUNCTION__,                               \
+    __FILE__,                                   \
+    __LINE__                                    \
   );
 
 #define LOG_DEBUG(MESSAGE)                      \

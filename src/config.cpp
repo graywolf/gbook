@@ -15,7 +15,7 @@ config::config(string config_file) {
     try {
         LOG_DEBUG("Reading config file " << config_file_);
         cfg_.readFile(config_file_);
-        LOG_DEBUG3("Config file loaded and parsed.");
+        LOG_DEBUG2("Config file loaded and parsed.");
     } catch (IOException & ioe) {
         LOG_ERROR("Cannot read config file: " << ioe.what());
         throw ioe;
@@ -29,7 +29,7 @@ config::~config() {
     try {
         LOG_DEBUG("Saving config.");
         cfg_.writeFile(config_file_.c_str());
-        LOG_DEBUG3("Config saved.");
+        LOG_DEBUG2("Config saved.");
     } catch (IOException & ioe) {
         LOG_ERROR("Cannot read config file: " << ioe.what());
         throw ioe;
@@ -49,11 +49,11 @@ string config::abook_file() {
     if (f.empty()) {
         string f = getenv("HOME");
         f.append("/.abook/addressbook");
-        LOG_DEBUG3("general.abook_file is empty, using default: " << f)
+        LOG_DEBUG2("general.abook_file is empty, using default: " << f)
     } else if(f.find('~') == 0) {
         string expanded_f = f;
         expanded_f.replace(0, 1, getenv("HOME"));
-        LOG_DEBUG3("general.abook_file if home-relative, expanding " << f << " to " << expanded_f)
+        LOG_DEBUG2("general.abook_file if home-relative, expanding " << f << " to " << expanded_f)
         f = expanded_f;
     }
     return f;
@@ -75,4 +75,23 @@ string config::client_secret() {
         throw runtime_error("oauth2.client_secret is empty, this should not be");
     }
     return csec;
+}
+
+string config::data_dir() {
+    string data_dir = get().cfg_.get("data_dir", string(), "general");
+    if (data_dir.empty()) {
+        LOG_ERROR("general.data_dir is empty");
+        throw runtime_error("general.data_dir is empty");
+    } else if(data_dir.find('~') == 0) {
+        string expanded_data_dir = data_dir;
+        expanded_data_dir.replace(0, 1, getenv("HOME"));
+        LOG_DEBUG2("general.data_dir if home-relative, expanding " << data_dir << " to " << expanded_data_dir)
+        data_dir = expanded_data_dir;
+    }
+    return data_dir;
+}
+
+string config::last_state_file() {
+    string dir = data_dir();
+    return dir.append("/last_state");
 }

@@ -17,7 +17,7 @@ namespace gbook {
      **/
     class google_manager : public storage_manager {
     public:
-        google_manager(contacts & c) : contacts_(c) {}
+        google_manager() : contacts_() {}
         virtual void add(user & u);
         virtual void update(user & u);
         virtual void remove(std::string id);
@@ -26,7 +26,7 @@ namespace gbook {
         virtual void fill_storage_changes(storage_changes & changes, user_list & last_sync);
     private:
         user_list current_;
-        contacts & contacts_;
+        contacts contacts_;
 
         int find_user_id_by_custom5(std::string);
         int find_user_id_by_custom5(user_list & haystack, std::string);

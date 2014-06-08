@@ -5,6 +5,8 @@
 #include <vector>
 #include <string>
 #include <ctime>
+#include <libgen.h>
+#include <iomanip>
 
 namespace jstation {
     enum class severity {
@@ -50,8 +52,8 @@ namespace jstation {
         void operator()(
             severity s,
             std::string message,
-            std::string file,
             std::string function,
+            std::string file,
             int line
         ) {
             if (s <= threshold_) {
@@ -64,6 +66,8 @@ namespace jstation {
                             << ":"
                             << to_string(s)
                             << ": "
+                            << std::left << std::setw(14) << file_path_to_name(file)
+                            << " : "
                             << message;
                 if (!file.empty()) {
                     std::cout << " in " << file << ":" << function << ":" << line;
@@ -76,6 +80,16 @@ namespace jstation {
             threshold_ = threshold;
         }
     private:
+        std::string file_path_to_name(std::string path) {
+            char * f = new char[path.size() + 1];
+            copy(path.begin(), path.end(), f);
+            f[path.size()] = 0x00;
+            char * bname = basename(f);
+            path = std::string(bname);
+            path = path.substr(0, path.find('.'));
+            delete f;
+            return path;
+        }
         severity threshold_= severity::WARNING;
     };
 
