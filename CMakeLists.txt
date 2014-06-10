@@ -20,6 +20,7 @@ SET(
         src/config.cpp
         src/curl.cpp
         src/google_manager.cpp
+        src/merger.cpp
         src/oauth2.cpp
         src/sync.cpp
         src/user_reader.cpp

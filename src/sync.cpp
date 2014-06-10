@@ -13,9 +13,21 @@
 using namespace std;
 using namespace gbook;
 
-void sync::do_sync() {
+sync::sync() {
     ensure_token();
+    am_ = new abook_manager();
+    gm_ = new google_manager();
+}
+
+sync::~sync() {
+    delete am_;
+    delete gm_;
+}
+
+void sync::do_sync() {
     load_managers();
+    m_.merge();
+    flush_managers();
 }
 
 void sync::ensure_token() {
@@ -42,6 +54,13 @@ void sync::load_managers() {
     load_google();
 }
 
+void sync::flush_managers() {
+    ofstream last_state(config::last_state_file());
+    am_->flush(last_state);
+    ofstream address_book(config::abook_file());
+    am_->flush(address_book);
+}
+
 void sync::load_last_state() {
     LOG_DEBUG("Loading last state file " << config::last_state_file());
     ifstream last_state_stream(config::last_state_file());
@@ -51,18 +70,17 @@ void sync::load_last_state() {
 
 void sync::load_abook() {
     LOG_DEBUG("Creating abook manager.");
-    abook_manager * abook = new abook_manager();
     LOG_DEBUG("Loading abook manager from " << config::abook_file());
     ifstream abook_istream(config::abook_file());
-    abook->load(abook_istream);
-    m_.set_primary(abook);
+    am_->load(abook_istream);
+    m_.set_primary(am_, false);
     LOG_DEBUG("Abook manager creation finished.");
 }
 
 void sync::load_google() {
     LOG_DEBUG("Creating google manager.");
-    google_manager * google = new google_manager();
     LOG_DEBUG("Loading google manager");
-    google->load();
+    gm_->load();
+    m_.add_secondary(gm_, false);
     LOG_DEBUG("Google manager creation finished.");
 }

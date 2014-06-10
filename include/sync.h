@@ -9,6 +9,8 @@
 #include "user.h"
 #include "oauth2.h"
 #include "merger.h"
+#include "abook_manager.h"
+#include "google_manager.h"
 
 namespace gbook {
     /**
@@ -16,6 +18,8 @@ namespace gbook {
      **/
     class sync {
     public:
+        sync();
+        ~sync();
         /**
          * Do the whole sync.
          **/
@@ -28,8 +32,13 @@ namespace gbook {
         void load_abook();
         void load_google();
 
+        void flush_managers();
+
         oauth2 o2_;
         merger m_;
+
+        abook_manager * am_;
+        google_manager * gm_;
     };
 }
 

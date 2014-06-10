@@ -5,7 +5,6 @@
 #include <vector>
 #include <string>
 #include <ctime>
-#include <libgen.h>
 #include <iomanip>
 
 namespace jstation {
@@ -81,13 +80,8 @@ namespace jstation {
         }
     private:
         std::string file_path_to_name(std::string path) {
-            char * f = new char[path.size() + 1];
-            copy(path.begin(), path.end(), f);
-            f[path.size()] = 0x00;
-            char * bname = basename(f);
-            path = std::string(bname);
+            path = path.substr(path.rfind('/') +1);
             path = path.substr(0, path.find('.'));
-            delete f;
             return path;
         }
         severity threshold_= severity::WARNING;

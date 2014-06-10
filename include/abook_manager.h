@@ -20,11 +20,14 @@ namespace gbook {
         virtual void update(user & u);
         virtual void remove(std::string id);
 
-        void flush(std::ostream) const;
+        void flush(std::ostream &) const;
         void load(std::istream &);
         virtual void fill_storage_changes(storage_changes & changes, user_list & last_sync);
+        virtual int get_max_id();
+        virtual std::string name();
     private:
-        user_list current_;
+        user_ptr_list current_;
+        user_list all_;
 
         int find_user_id_by_custom5(std::string);
     };

@@ -36,7 +36,6 @@ namespace gbook {
          * \param std::string id Id of user to be removed.
          **/
         virtual void remove(std::string id) =0;
-
         /**
          * Fills storage_changes with changes base on last_sync.
          *
@@ -44,6 +43,20 @@ namespace gbook {
          * \param const user_list & last_sync State after last sync
          **/
         virtual void fill_storage_changes(storage_changes & changes, user_list & last_sync) =0;
+        /**
+         * Returns maximum id of an user in this manager.
+         *
+         * \return int
+         **/
+        virtual int get_max_id() =0;
+        /**
+         * Return name/id/something of storage manager to be shown in the log.
+         *
+         * \return std::string
+         **/
+        virtual std::string name() =0;
+
+        virtual ~storage_manager() {};
     };
 }
 

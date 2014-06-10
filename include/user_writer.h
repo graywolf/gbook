@@ -3,7 +3,6 @@
 
 #include <vector>
 #include <iostream>
-#include <algorithm>
 
 #include "user.h"
 
@@ -18,5 +17,7 @@ namespace gbook {
 std::ostream& operator<<(std::ostream& os, const gbook::user& u);
 
 std::ostream& operator<<(std::ostream& os, const std::vector<gbook::user>& users);
+
+std::ostream& operator<<(std::ostream& os, const std::vector<gbook::user *>& users);
 
 #endif // GBOOK_ABOOK_USER_WRITER_H

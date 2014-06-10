@@ -3,6 +3,9 @@
 #include <cstdlib>
 #include <argp.h>
 #include <stdexcept>
+#include <signal.h>
+#include <unistd.h>
+#include <execinfo.h>
 
 #include "sync.h"
 #include "typedefs.h"
@@ -67,11 +70,25 @@ argp_option options[] = {
 const char *argp_program_version = MAJOR_VERSION "." MINOR_VERSION "." REVISION;
 const char *argp_program_bug_address = "<paladin@jstation.cz>";
 
+void handler(int sig) {
+    void *array[10];
+    size_t size;
+
+    // get void*'s for all entries on the stack
+    size = backtrace(array, 10);
+
+    // print out all the frames to stderr
+    fprintf(stderr, "Error: signal %d:\n", sig);
+    backtrace_symbols_fd(array, size, STDERR_FILENO);
+    exit(1);
+}
+
 int main(int argc, char **argv) {
     try {
         ios_base::sync_with_stdio(false);
         locale loc ("");
         locale::global (loc);
+        signal(SIGSEGV, handler);
 
         jstation::logger * cout_logger = new jstation::cout_logger();
         cout_logger->set_threshold(jstation::severity::INFO);

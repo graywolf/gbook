@@ -129,7 +129,7 @@ namespace gbook {
                     && custom5.empty();
         }
 
-        bool operator==(const user & other) {
+        bool operator==(const user & other) const {
             return     name == other.name
                     && emails == other.emails
                     && address == other.address
@@ -154,7 +154,7 @@ namespace gbook {
                     && custom5 == other.custom5;
         }
 
-        bool operator!=(const user & other) {
+        bool operator!=(const user & other) const {
             return ! (*this == other);
         }
 

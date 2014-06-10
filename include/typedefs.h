@@ -8,15 +8,15 @@
 #include "logger.h"
 
 namespace gbook {
-    typedef std::vector<user>           user_list;
-    typedef std::vector<user *>         user_ptr_list;
+    typedef std::vector<user>          user_list;
+    typedef std::vector<gbook::user *> user_ptr_list;
 
     typedef jstation::severity severity;
 
     struct storage_changes {
         user_ptr_list new_users;
         user_ptr_list modified_users;
-        user_list deleted_users;
+        user_ptr_list deleted_users;
     };
 }
 

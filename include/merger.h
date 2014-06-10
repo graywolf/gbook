@@ -17,6 +17,7 @@ namespace gbook {
             storage_changes changes_;
         };
     public:
+        ~merger();
         /**
          * Sets primary manager
          *
@@ -24,8 +25,8 @@ namespace gbook {
          * \param bool owner is merger owner of the manager?
          **/
         void set_primary(storage_manager * manager, bool owner = true) {
-            primary.manager_ = manager;
-            primary.owner_ = owner;
+            primary_.manager_ = manager;
+            primary_.owner_ = owner;
         }
 
         /**
@@ -38,7 +39,7 @@ namespace gbook {
             manager_record mr;
             mr.manager_ = manager;
             mr.owner_ = owner;
-            secondaries.push_back(mr);
+            secondaries_.push_back(mr);
         }
 
         /**
@@ -50,10 +51,24 @@ namespace gbook {
             last_state_ = last_state;
         }
 
+        /**
+         * Merges managers.
+         **/
+         void merge();
+
     private:
+        void generate_storage_changes();
+        void deduplicate_changes();
+        void do_merge();
+        int get_next_id_to_use();
+        void update_secondary(manager_record & secondary, int &);
+        void update_primary(int &);
+        void fill_secondary_changes();
+
         user_list last_state_;
-        manager_record primary;
-        std::vector<manager_record> secondaries;
+        manager_record primary_;
+        std::vector<manager_record> secondaries_;
+        storage_changes secondary_changes_;
     };
 }
 

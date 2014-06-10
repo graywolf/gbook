@@ -1,90 +1,100 @@
 #include "user_writer.h"
 
-std::string gbook::sanitize(std::string input, bool group_mode) {
+#include <string>
+#include <algorithm>
+
+using namespace std;
+using namespace gbook;
+
+string gbook::sanitize(string input, bool group_mode) {
     input.erase(
         remove(begin(input), end(input), '\n'),
-                end(input)
+        end(input)
     );
     if (group_mode) {
-        replace(begin(input), end(input), ',', '_');
+        for (auto & c : input) {
+            if (c == ',') {
+                c = '_';
+            }
+        }
     }
     return input;
 }
 
-std::ostream& operator<<(std::ostream& os, const gbook::user& u) {
+ostream& operator<<(ostream& os, const user& u) {
     if (!u.name.empty()) {
-        os << "name=" << gbook::sanitize(u.name) << "\n";
+        os << "name=" << sanitize(u.name) << "\n";
     }
     if (!u.address.empty()) {
-        os << "address=" << gbook::sanitize(u.address) << "\n";
+        os << "address=" << sanitize(u.address) << "\n";
     }
     if (!u.address2.empty()) {
-        os << "address2=" << gbook::sanitize(u.address2) << "\n";
+        os << "address2=" << sanitize(u.address2) << "\n";
     }
     if (!u.city.empty()) {
-        os << "city=" << gbook::sanitize(u.city) << "\n";
+        os << "city=" << sanitize(u.city) << "\n";
     }
     if (!u.state.empty()) {
-        os << "state=" << gbook::sanitize(u.state) << "\n";
+        os << "state=" << sanitize(u.state) << "\n";
     }
     if (!u.zip.empty()) {
-        os << "zip=" << gbook::sanitize(u.zip) << "\n";
+        os << "zip=" << sanitize(u.zip) << "\n";
     }
     if (!u.country.empty()) {
-        os << "country=" << gbook::sanitize(u.country) << "\n";
+        os << "country=" << sanitize(u.country) << "\n";
     }
     if (!u.phone.empty()) {
-        os << "phone=" << gbook::sanitize(u.phone) << "\n";
+        os << "phone=" << sanitize(u.phone) << "\n";
     }
     if (!u.workphone.empty()) {
-        os << "workphone=" << gbook::sanitize(u.workphone) << "\n";
+        os << "workphone=" << sanitize(u.workphone) << "\n";
     }
     if (!u.fax.empty()) {
-        os << "fax=" << gbook::sanitize(u.fax) << "\n";
+        os << "fax=" << sanitize(u.fax) << "\n";
     }
     if (!u.mobile.empty()) {
-        os << "mobile=" << gbook::sanitize(u.mobile) << "\n";
+        os << "mobile=" << sanitize(u.mobile) << "\n";
     }
     if (!u.nick.empty()) {
-        os << "nick=" << gbook::sanitize(u.nick) << "\n";
+        os << "nick=" << sanitize(u.nick) << "\n";
     }
     if (!u.url.empty()) {
-        os << "url=" << gbook::sanitize(u.url) << "\n";
+        os << "url=" << sanitize(u.url) << "\n";
     }
     if (!u.notes.empty()) {
-        os << "notes=" << gbook::sanitize(u.notes) << "\n";
+        os << "notes=" << sanitize(u.notes) << "\n";
     }
     if (!u.anniversary.empty()) {
-        os << "anniversary=" << gbook::sanitize(u.anniversary) << "\n";
+        os << "anniversary=" << sanitize(u.anniversary) << "\n";
     }
     if (!u.custom1.empty()) {
-        os << "custom1=" << gbook::sanitize(u.custom1) << "\n";
+        os << "custom1=" << sanitize(u.custom1) << "\n";
     }
     if (!u.custom2.empty()) {
-        os << "custom2=" << gbook::sanitize(u.custom2) << "\n";
+        os << "custom2=" << sanitize(u.custom2) << "\n";
     }
     if (!u.custom3.empty()) {
-        os << "custom3=" << gbook::sanitize(u.custom3) << "\n";
+        os << "custom3=" << sanitize(u.custom3) << "\n";
     }
     if (!u.custom4.empty()) {
-        os << "custom4=" << gbook::sanitize(u.custom4) << "\n";
+        os << "custom4=" << sanitize(u.custom4) << "\n";
     }
     if (!u.custom5.empty()) {
-        os << "custom5=" << gbook::sanitize(u.custom5) << "\n";
+        os << "custom5=" << sanitize(u.custom5) << "\n";
     }
 
     if (u.emails.size() > 0) {
-        os << "email=" << gbook::sanitize(u.emails.at(0), true);
+        os << "email=" << sanitize(u.emails.at(0), true);
         for (auto it = begin(u.emails) +1; it != end(u.emails); ++it) {
-            os << "," << gbook::sanitize(*it, true);
+            os << "," << sanitize(*it, true);
         }
         os << "\n";
     }
 
     if (u.groups.size() > 0) {
-        os << "groups=" << gbook::sanitize(u.groups.at(0), true);
+        os << "groups=" << sanitize(u.groups.at(0), true);
         for (auto it = begin(u.groups) +1; it != end(u.groups); ++it) {
-            os << "," << gbook::sanitize(*it, true);
+            os << "," << sanitize(*it, true);
         }
         os << "\n";
     }
@@ -92,11 +102,21 @@ std::ostream& operator<<(std::ostream& os, const gbook::user& u) {
     return os;
 }
 
-std::ostream& operator<<(std::ostream& os, const std::vector<gbook::user>& users) {
+ostream& operator<<(ostream& os, const vector<user>& users) {
     int user_number = 0;
-    for (gbook::user u : users) {
+    for (user u : users) {
         os << "[" << user_number++ << "]\n";
         os << u;
+        os << "\n";
+    }
+    return os;
+}
+
+ostream& operator<<(ostream& os, const vector<user *>& users) {
+    int user_number = 0;
+    for (user * u : users) {
+        os << "[" << user_number++ << "]\n";
+        os << *u;
         os << "\n";
     }
     return os;
