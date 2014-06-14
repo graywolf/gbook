@@ -3,11 +3,16 @@
 2. Compilation
 3. Configuration
 4. Usage
+5. Logging
+
+
 
 0. Prolog
 
 Gbook is simple application dedicated to synchronizing contacts between abook data file
 and google contacts.
+
+
 
 1. Requirements
 
@@ -17,10 +22,14 @@ libjsoncpp
 libconfig
 gcc 4.8+ (c++11 support)
 
+
+
 2. Compilation
 
     cmake
     make
+
+
 
 3. Configuration
 
@@ -29,6 +38,28 @@ good, just set client_id, client_secret) and copy into ~/.config/gbook . You can
 have config file even in other places but you need to specify path each time you
 use this program.
 
+
+
 4. Usage
 
 See `./gbook --help` for possible options.
+
+
+
+5. Logging
+
+There are two loggers included.
+1) cout logger
+    logging into std::count
+
+    Amount of output can be configured via command line arguments. See program
+    help for more details.
+
+2) file logger
+    logging into std::ofstream(general.log_file)
+
+    Logs always the most verbose output possible. Useful for post-mortem debugging
+    after program dies with lower verbosity on cout logger.
+
+    Can be turned out by leaving general.log_file in config file empty or delete it
+    altogether.

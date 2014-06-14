@@ -2,6 +2,7 @@
 #define LOGGER_H
 
 #include <iostream>
+#include <fstream>
 #include <vector>
 #include <string>
 #include <ctime>
@@ -85,6 +86,50 @@ namespace jstation {
             return path;
         }
         severity threshold_= severity::WARNING;
+    };
+
+    class file_logger : public logger {
+    public:
+        file_logger(std::string filename) : log_(filename, std::ios_base::app) {}
+        ~file_logger() {}
+        void operator()(
+            severity s,
+            std::string message,
+            std::string function,
+            std::string file,
+            int line
+        ) {
+            if (s <= threshold_) {
+                char timestamp[20];
+                time_t raw_time;
+                time(&raw_time);
+                struct tm * timeinfo = localtime(&raw_time);
+                strftime(timestamp, 20, "%F %T", timeinfo);
+                log_    << timestamp
+                        << ":"
+                        << to_string(s)
+                        << ": "
+                        << std::left << std::setw(14) << file_path_to_name(file)
+                        << " : "
+                        << message;
+                if (!file.empty()) {
+                    log_ << " in " << file << ":" << function << ":" << line;
+                }
+                log_ << std::endl;
+            }
+        }
+
+        void set_threshold(severity threshold) {
+            threshold_ = threshold;
+        }
+    private:
+        std::string file_path_to_name(std::string path) {
+            path = path.substr(path.rfind('/') +1);
+            path = path.substr(0, path.find('.'));
+            return path;
+        }
+        std::ofstream log_;
+        severity threshold_= severity::DEBUG3;
     };
 
     class logger_collection {

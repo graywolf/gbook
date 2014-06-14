@@ -85,14 +85,21 @@ namespace gbook {
          *
          * \return std::string
          **/
-         static std::string data_dir();
+        static std::string data_dir();
 
         /**
          * Last state file.
          *
          * \return std::string
          **/
-         static std::string last_state_file();
+        static std::string last_state_file();
+
+        /**
+         * Path to log file.
+         *
+         * \return std::string
+         **/
+        static std::string log_file();
     private:
         config(std::string config_file);
         ~config();

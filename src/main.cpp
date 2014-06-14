@@ -117,6 +117,11 @@ int main(int argc, char **argv) {
 
         gbook::config::get(config_file);
 
+        if (!gbook::config::log_file().empty()) {
+            jstation::logger * file_logger = new jstation::file_logger(gbook::config::log_file());
+            jstation::logger_collection::instance().add_logger(file_logger);
+        }
+
         switch (command) {
             case commands::manage:
                 LOG_INFO("Starting abook...")

@@ -95,3 +95,14 @@ string config::last_state_file() {
     string dir = data_dir();
     return dir.append("/last_state");
 }
+
+string config::log_file() {
+    string log_file = get().cfg_.get("log_file", string(), "general");
+    if(log_file.find('~') == 0) {
+        string expanded_log_file = log_file;
+        expanded_log_file.replace(0, 1, getenv("HOME"));
+        LOG_DEBUG2("general.log_file if home-relative, expanding " << log_file << " to " << expanded_log_file)
+        log_file = expanded_log_file;
+    }
+    return log_file;
+}
