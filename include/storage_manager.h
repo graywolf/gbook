@@ -33,9 +33,9 @@ namespace gbook {
         /**
          * Removes user with this id.
          *
-         * \param std::string id Id of user to be removed.
+         * \param user & u
          **/
-        virtual void remove(std::string id) =0;
+        virtual void remove(user & u) =0;
         /**
          * Fills storage_changes with changes base on last_sync.
          *

@@ -6,41 +6,17 @@
 
 #include "typedefs.h"
 #include "user.h"
-#include "storage_manager.h"
+#include "abook_manager.h"
+#include "google_manager.h"
 
 namespace gbook {
     class merger {
-    private:
-        struct manager_record {
-            storage_manager * manager_;
-            bool owner_;
-            storage_changes changes_;
-        };
     public:
-        ~merger();
-        /**
-         * Sets primary manager
-         *
-         * \param storage_manager * manager storage manager
-         * \param bool owner is merger owner of the manager?
-         **/
-        void set_primary(storage_manager * manager, bool owner = true) {
-            primary_.manager_ = manager;
-            primary_.owner_ = owner;
-        }
+        merger(std::vector<std::string> & synced_c5s)
+            : synced_c5s_(synced_c5s) {}
 
-        /**
-         * Adds secondary manager
-         *
-         * \param storage_manager * manager storage manager
-         * \param bool owner is merger owner of the manager?
-         **/
-        void add_secondary(storage_manager * manager, bool owner = true) {
-            manager_record mr;
-            mr.manager_ = manager;
-            mr.owner_ = owner;
-            secondaries_.push_back(mr);
-        }
+        abook_manager * abook_m;
+        google_manager * google_m;
 
         /**
          * Set's state after last sync.
@@ -58,17 +34,31 @@ namespace gbook {
 
     private:
         void generate_storage_changes();
-        void deduplicate_changes();
         void do_merge();
-        int get_next_id_to_use();
-        void update_secondary(manager_record & secondary, int &);
-        void update_primary(int &);
-        void fill_secondary_changes();
+        void set_next_id_to_use();
+        void update_abook();
+        void update_google();
+
+        inline bool user_synced(user & u) {
+            return user_synced(u.custom5);
+        }
+        inline bool user_synced(user * u) {
+            return user_synced(u->custom5);
+        }
+        inline bool user_synced(std::string c5) {
+            // cannot use std::find cause of bug in gcc/stdlibc++/something
+            for (std::string c5_in_v : synced_c5s_) {
+                if (c5_in_v == c5) {
+                    return true;
+                }
+            }
+            return false;
+        }
 
         user_list last_state_;
-        manager_record primary_;
-        std::vector<manager_record> secondaries_;
-        storage_changes secondary_changes_;
+        storage_changes abook_changes_, google_changes_;
+        int id_;
+        std::vector<std::string> & synced_c5s_;
     };
 }
 

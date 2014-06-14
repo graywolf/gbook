@@ -4,6 +4,7 @@
 #include "curl.h"
 #include "oauth2.h"
 #include "user.h"
+#include "typedefs.h"
 
 #include "tinyxml2/tinyxml2.h"
 
@@ -26,7 +27,7 @@ namespace gbook {
          *
          * \return std::vector<gbook::user>
          **/
-        std::vector<user> get_all();
+        user_list get_all();
         /**
          * Adds new user to Google Contacts.
          *

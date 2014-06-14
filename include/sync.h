@@ -3,6 +3,7 @@
 
 #include <string>
 #include <map>
+#include <vector>
 #include <set>
 #include <iostream>
 
@@ -34,11 +35,14 @@ namespace gbook {
 
         void flush_managers();
 
+        std::vector<std::string> synced_c5s_;
+
         oauth2 o2_;
         merger m_;
 
         abook_manager * am_;
         google_manager * gm_;
+
     };
 }
 

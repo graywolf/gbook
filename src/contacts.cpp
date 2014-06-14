@@ -47,9 +47,9 @@ contacts::contacts() {
     LOG_DEBUG2("'my contacts' group id: " << my_contacts_group_id_);
 }
 
-vector<user> contacts::get_all() {
+user_list contacts::get_all() {
     LOG_DEBUG2("Getting all contacts.");
-    vector<user> users;
+    user_list users;
     string url = "https://www.google.com/m8/feeds/contacts/default/full?group=";
     url.append(my_contacts_group_id_);
     do {

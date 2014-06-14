@@ -18,7 +18,7 @@ namespace gbook {
     public:
         virtual void add(user & u);
         virtual void update(user & u);
-        virtual void remove(std::string id);
+        virtual void remove(user & u);
 
         void flush(std::ostream &) const;
         void load(std::istream &);
@@ -28,8 +28,6 @@ namespace gbook {
     private:
         user_ptr_list current_;
         user_list all_;
-
-        int find_user_id_by_custom5(std::string);
     };
 }
 

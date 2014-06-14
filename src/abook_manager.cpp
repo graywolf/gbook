@@ -1,8 +1,7 @@
 #include "abook_manager.h"
 #include "macros.h"
+#include "funcs.h"
 
-#include <sstream>
-#include <algorithm>
 #include <string>
 
 using namespace std;
@@ -20,58 +19,48 @@ void abook_manager::flush(ostream & stream) const {
     stream << current_;
 }
 
-int abook_manager::find_user_id_by_custom5(std::string id) {
-    int index = -1;
-    for (size_t i = 0; i < current_.size(); ++i) {
-        if (current_.at(i)->custom5 == id) {
-            index = i;
-            break;
-        }
-    }
-    return index;
-}
-
 void abook_manager::add(user & u) {
-    if (find_user_id_by_custom5(u.custom5) != -1) {
+    if (is_user_in(u, current_)) {
         throw invalid_argument("User with this custom5 already exists.");
     }
-    all_.push_back(user(u));
+    all_.push_back(u);
     current_.push_back(&all_.back());
 }
 
 void abook_manager::update(user & u) {
-    int i = find_user_id_by_custom5(u.custom5);
-    if (i == -1) {
+    auto it = find_user_in(u, all_);
+    if (end(all_) == it) {
         throw invalid_argument("User with this custom5 doesn't exist.");
     }
-    *current_.at(i) = u;
+    *it = u;
 }
 
-void abook_manager::remove(std::string id) {
-    int i = find_user_id_by_custom5(id);
-    if (i == -1) {
-        LOG_INFO("User with this custom5 doesn't exist: " << id);
+void abook_manager::remove(user & u) {
+    auto it = find_user_in(u, current_);
+    if (end(current_) == it) {
+        LOG_INFO("User with this custom5 doesn't exist: " << u.custom5);
     } else {
-        current_.erase(begin(current_) + i);
+        current_.erase(it);
     }
 }
 
 void abook_manager::fill_storage_changes(storage_changes & changes, user_list & last_sync) {
     changes.new_users.clear();
-    for (size_t i = 0; i < current_.size(); ++i) {
-        if (current_.at(i)->custom5.empty()) {
-            changes.new_users.push_back(current_.at(i));
+    changes.modified_users.clear();
+    changes.deleted_users.clear();
+
+    for (user * u : current_) {
+        if (u->custom5.empty() || !is_user_in(u, current_)) {
+            changes.new_users.push_back(u);
         }
     }
 
-    changes.modified_users.clear();
-    changes.deleted_users.clear();
-    for (size_t i = 0; i < last_sync.size(); ++i) {
-        int current_id = find_user_id_by_custom5(last_sync.at(i).custom5);
-        if (current_id == -1) {
-            changes.deleted_users.push_back(&last_sync.at(i));
-        } else if (last_sync.at(i) != *current_.at(current_id)) {
-            changes.modified_users.push_back(current_.at(current_id));
+    for (user & u : last_sync) {
+        auto cur_it = find_user_in(u, current_);
+        if (end(current_) == cur_it) {
+            changes.deleted_users.push_back(&u);
+        } else if (u != **cur_it) {
+            changes.modified_users.push_back(*cur_it);
         }
     }
 }

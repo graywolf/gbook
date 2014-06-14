@@ -102,7 +102,7 @@ ostream& operator<<(ostream& os, const user& u) {
     return os;
 }
 
-ostream& operator<<(ostream& os, const vector<user>& users) {
+ostream& operator<<(ostream& os, const user_list & users) {
     int user_number = 0;
     for (user u : users) {
         os << "[" << user_number++ << "]\n";
@@ -112,7 +112,7 @@ ostream& operator<<(ostream& os, const vector<user>& users) {
     return os;
 }
 
-ostream& operator<<(ostream& os, const vector<user *>& users) {
+ostream& operator<<(ostream& os, const user_ptr_list & users) {
     int user_number = 0;
     for (user * u : users) {
         os << "[" << user_number++ << "]\n";

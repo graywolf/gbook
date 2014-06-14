@@ -4,6 +4,7 @@
 #include <vector>
 #include <iostream>
 
+#include "typedefs.h"
 #include "user.h"
 
 namespace gbook {
@@ -16,8 +17,8 @@ namespace gbook {
 
 std::ostream& operator<<(std::ostream& os, const gbook::user& u);
 
-std::ostream& operator<<(std::ostream& os, const std::vector<gbook::user>& users);
+std::ostream& operator<<(std::ostream& os, const gbook::user_list& users);
 
-std::ostream& operator<<(std::ostream& os, const std::vector<gbook::user *>& users);
+std::ostream& operator<<(std::ostream& os, const gbook::user_ptr_list& users);
 
 #endif // GBOOK_ABOOK_USER_WRITER_H

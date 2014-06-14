@@ -1,6 +1,8 @@
 #ifndef GBOOK_ABOOK_USER_H
 #define GBOOK_ABOOK_USER_H
 
+#include "macros.h"
+
 #include <string>
 #include <vector>
 #include <map>
@@ -163,6 +165,7 @@ namespace gbook {
             if (it != ids_.end()) {
                 return ids_.find(key)->second;
             } else {
+                LOG_ERROR("No id for key " << key << " in user " << name)
                 throw std::invalid_argument("No such id.");
             }
         }

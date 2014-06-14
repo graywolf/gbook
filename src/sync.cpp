@@ -13,7 +13,7 @@
 using namespace std;
 using namespace gbook;
 
-sync::sync() {
+sync::sync() : m_(synced_c5s_) {
     ensure_token();
     am_ = new abook_manager();
     gm_ = new google_manager();
@@ -73,7 +73,7 @@ void sync::load_abook() {
     LOG_DEBUG("Loading abook manager from " << config::abook_file());
     ifstream abook_istream(config::abook_file());
     am_->load(abook_istream);
-    m_.set_primary(am_, false);
+    m_.abook_m = am_;
     LOG_DEBUG("Abook manager creation finished.");
 }
 
@@ -81,6 +81,6 @@ void sync::load_google() {
     LOG_DEBUG("Creating google manager.");
     LOG_DEBUG("Loading google manager");
     gm_->load();
-    m_.add_secondary(gm_, false);
+    m_.google_m = gm_;
     LOG_DEBUG("Google manager creation finished.");
 }

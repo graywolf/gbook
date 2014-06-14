@@ -19,6 +19,7 @@ SET(
         src/contacts.cpp
         src/config.cpp
         src/curl.cpp
+        src/funcs.cpp
         src/google_manager.cpp
         src/merger.cpp
         src/oauth2.cpp

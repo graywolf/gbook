@@ -2,14 +2,15 @@
 #define GBOOK_TYPEDEFS_H
 
 #include <vector>
+#include <list>
 #include <map>
 
 #include "user.h"
 #include "logger.h"
 
 namespace gbook {
-    typedef std::vector<user>          user_list;
-    typedef std::vector<gbook::user *> user_ptr_list;
+    typedef std::list<user>   user_list;
+    typedef std::list<user *> user_ptr_list;
 
     typedef jstation::severity severity;
 

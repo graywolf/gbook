@@ -20,7 +20,7 @@ namespace gbook {
         google_manager() : contacts_() {}
         virtual void add(user & u);
         virtual void update(user & u);
-        virtual void remove(std::string id);
+        virtual void remove(user & u);
 
         void load();
         virtual void fill_storage_changes(storage_changes & changes, user_list & last_sync);
@@ -29,9 +29,6 @@ namespace gbook {
     private:
         user_list all_;
         contacts contacts_;
-
-        int find_user_id_by_custom5(std::string);
-        int find_user_id_by_custom5(user_list & haystack, std::string);
     };
 }
 

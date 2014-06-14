@@ -1,4 +1,5 @@
 #include "user_writer.h"
+#include "typedefs.h"
 
 #include <sstream>
 
@@ -34,7 +35,7 @@ TEST (GbookAbookUserWriter, writeOneFullUser) {
     u.groups.push_back("a");
     u.groups.push_back("b");
 
-    vector<user> us;
+    user_list us;
     us.push_back(u);
     stringstream ss;
     ss << us;

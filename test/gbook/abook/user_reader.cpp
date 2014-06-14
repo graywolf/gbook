@@ -37,35 +37,35 @@ custom2=c2\n\
 custom3=c3\n\
 custom4=c4\n\
 custom5=c5");
-    vector<user> users = load_users_from_stream(ss);
+    auto users = load_users_from_stream(ss);
     ASSERT_EQ((size_t) 1, users.size());
-    ASSERT_EQ("Test Tester", users[0].name);
-    ASSERT_EQ("Patkova 3", users[0].address);
-    ASSERT_EQ("room 918", users[0].address2);
-    ASSERT_EQ("Prague", users[0].city);
-    ASSERT_EQ("Prague province", users[0].state);
-    ASSERT_EQ("18000", users[0].zip);
-    ASSERT_EQ("CR", users[0].country);
-    ASSERT_EQ("1", users[0].phone);
-    ASSERT_EQ("2", users[0].workphone);
-    ASSERT_EQ("3", users[0].fax);
-    ASSERT_EQ("4", users[0].mobile);
-    ASSERT_EQ("nick", users[0].nick);
-    ASSERT_EQ("t.t", users[0].url);
-    ASSERT_EQ("notest uber notes", users[0].notes);
-    ASSERT_EQ("1993-02-24", users[0].anniversary);
-    ASSERT_EQ("c1", users[0].custom1);
-    ASSERT_EQ("c2", users[0].custom2);
-    ASSERT_EQ("c3", users[0].custom3);
-    ASSERT_EQ("c4", users[0].custom4);
-    ASSERT_EQ("c5", users[0].custom5);
+    ASSERT_EQ("Test Tester", begin(users)->name);
+    ASSERT_EQ("Patkova 3", begin(users)->address);
+    ASSERT_EQ("room 918", begin(users)->address2);
+    ASSERT_EQ("Prague", begin(users)->city);
+    ASSERT_EQ("Prague province", begin(users)->state);
+    ASSERT_EQ("18000", begin(users)->zip);
+    ASSERT_EQ("CR", begin(users)->country);
+    ASSERT_EQ("1", begin(users)->phone);
+    ASSERT_EQ("2", begin(users)->workphone);
+    ASSERT_EQ("3", begin(users)->fax);
+    ASSERT_EQ("4", begin(users)->mobile);
+    ASSERT_EQ("nick", begin(users)->nick);
+    ASSERT_EQ("t.t", begin(users)->url);
+    ASSERT_EQ("notest uber notes", begin(users)->notes);
+    ASSERT_EQ("1993-02-24", begin(users)->anniversary);
+    ASSERT_EQ("c1", begin(users)->custom1);
+    ASSERT_EQ("c2", begin(users)->custom2);
+    ASSERT_EQ("c3", begin(users)->custom3);
+    ASSERT_EQ("c4", begin(users)->custom4);
+    ASSERT_EQ("c5", begin(users)->custom5);
 
-    ASSERT_EQ((size_t) 2, users[0].emails.size());
-    ASSERT_EQ("tt@example.com", users[0].emails[0]);
-    ASSERT_EQ("tt2@example.com", users[0].emails[1]);
-    ASSERT_EQ((size_t) 2, users[0].groups.size());
-    ASSERT_EQ("a", users[0].groups[0]);
-    ASSERT_EQ("b", users[0].groups[1]);
+    ASSERT_EQ((size_t) 2, begin(users)->emails.size());
+    ASSERT_EQ("tt@example.com", begin(users)->emails[0]);
+    ASSERT_EQ("tt2@example.com", begin(users)->emails[1]);
+    ASSERT_EQ((size_t) 2, begin(users)->groups.size());
+    ASSERT_EQ("a", begin(users)->groups[0]);
+    ASSERT_EQ("b", begin(users)->groups[1]);
 }
 
 TEST (GbookAbookUserReader, loadMoreUsersFromStream) {
@@ -83,9 +83,10 @@ name=t0\n\
 name=t1\n\
 [2]\n\
 name=t2");
-    vector<user> users = load_users_from_stream(ss);
+    auto users = load_users_from_stream(ss);
     ASSERT_EQ((size_t) 3, users.size());
-    ASSERT_EQ("t0", users[0].name);
-    ASSERT_EQ("t1", users[1].name);
-    ASSERT_EQ("t2", users[2].name);
+    auto it = begin(users);
+    ASSERT_EQ("t0", (it++)->name);
+    ASSERT_EQ("t1", (it++)->name);
+    ASSERT_EQ("t2", it->name);
 }

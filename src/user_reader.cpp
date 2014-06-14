@@ -1,25 +1,24 @@
 #include "user_reader.h"
 
 #include <sstream>
-
 #include <iostream>
 
 using namespace std;
 using namespace gbook;
 
-vector<user> gbook::load_users_from_stream(istream & input) {
+user_list gbook::load_users_from_stream(istream & input) {
     string data((std::istreambuf_iterator<char>(input)), std::istreambuf_iterator<char>());
     return parse_string(data);
 }
 
-vector<user> gbook::parse_string(string input) {
+user_list gbook::parse_string(string input) {
     istringstream iss(input);
     string line;
 
     user current_user;
     bool in_user = false;
 
-    vector<user> users;
+    user_list users;
 
     while (getline(iss, line)) {
         if (!line.empty()) {
