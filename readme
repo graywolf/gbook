@@ -19,8 +19,7 @@ and google contacts.
 cmake
 libcurl
 libjsoncpp
-libconfig
-gcc 4.8+ (c++11 support)
+gcc 4.8+ (c++11 support) (clang not tested, should work too)
 
 
 
