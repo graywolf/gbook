@@ -3,3 +3,4 @@ build/*
 docs/*
 gbook.sublime-workspace
 test/tmp/*
+*.swp

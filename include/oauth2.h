@@ -3,13 +3,12 @@
 
 #include "config.h"
 #include "curl.h"
-#include "jsoncpp/json/json.h"
+#include "json/json.h"
 
 #include <iostream>
 #include <fstream>
 #include <chrono>
 #include <thread>
-#include <libconfig.h++>
 
 namespace gbook {
 
